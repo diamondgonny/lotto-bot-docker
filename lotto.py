@@ -45,19 +45,19 @@ def get_latest_log_file(directory="log"):
     except Exception as e:
         raise Exception(str(e))
 
-def get_winning_numbers(round_num):
+def get_winning_numbers(round_number):
     """회차별 당첨번호를 가져옴"""
     url = (
         f"https://www.dhlottery.co.kr/common.do?"
         f"method=getLottoNumber&"
-        f"drwNo={round_num}"
+        f"drwNo={round_number}"
     )
     response = requests.get(url)
     if response.status_code != 200:
-        raise Exception(f"{round_num}회차 당첨 정보를 조회할 수 없습니다.")
+        raise Exception(f"{round_number}회차 당첨 정보를 조회할 수 없습니다.")
     lotto_data = response.json()
     if lotto_data.get("returnValue") != "success":
-        raise Exception(f"{round_num}회차 당첨 정보가 아직 없습니다.")
+        raise Exception(f"{round_number}회차 당첨 정보가 아직 없습니다.")
     return lotto_data
 
 def check_prize(numbers, winning_numbers, bonus_number):
@@ -254,19 +254,19 @@ if __name__ == "__main__":
         print(str(e))
 
     try:
-        res = process_lotto_results(log_dir)
-        print(res)
+        result_1 = process_lotto_results(log_dir)
+        print(result_1)
     except (RuntimeError, ValueError, AttributeError, FileNotFoundError, KeyError) as e:
         handle_error_1(e, log_dir, today_datetime)
     except Exception as e:
         handle_error_1(e, log_dir, today_datetime)
 
     try:
-        msg_str = check_buy_and_report_lotto(log_dir)
-        print(msg_str)
-        round_number, target_saturday = get_lotto_round_and_target_date(datetime.now().strftime("%Y-%m-%d"))
-        res = report_lotto_numbers("log/lotto_log_1144.txt", round_number, target_saturday)
-        print(res)
+        result_2 = check_buy_and_report_lotto(log_dir)
+        print(result_2)
+        # round_number, target_saturday = get_lotto_round_and_target_date(datetime.now().strftime("%Y-%m-%d"))
+        # res = report_lotto_numbers("log/lotto_log_1144.txt", round_number, target_saturday)
+        # print(res)
     except (RuntimeError, ValueError, AttributeError, FileNotFoundError, KeyError) as e:
         handle_error_2(e, log_dir, today_datetime)
     except Exception as e:
