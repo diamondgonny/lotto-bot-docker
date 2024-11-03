@@ -1,5 +1,6 @@
 import subprocess
 import os
+import re
 import requests
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
@@ -18,13 +19,16 @@ password = "______"
 discord_webhook_url="https://discord.com/api/webhooks/______"
 """
 
-
 def send_message(msg):
     """디스코드 메세지 전송"""
     if DISCORD_BOT:
         discord_webhook_url = os.getenv('discord_webhook_url')
         message = {"content": f"{str(msg)}"}
         requests.post(discord_webhook_url, data=message)
+
+"""
+1. dhapi를 활용한 구매 -> 구매 내역 기록(lotto_log_OOOO.txt) -> 디스코드 알림
+"""
 
 def get_lotto_round_and_target_date(target_date):
     """주어진 날짜의 로또 회차와 추첨일 계산"""
@@ -105,8 +109,93 @@ def check_buy_and_report_lotto():
             f.write(f"{today_datetime} - {str(e)}\n")
         return str(e)
 
+"""
+2. 최근 구매 내역 파일(lotto_log_OOOO.txt) 열기 -> 당첨 결과 확인 및 기록 -> 디스코드 알림
+"""
+
+def get_latest_log_file(directory='log'):
+    """저장된 최근 구매 내역 (최신 회차) 파일을 반환"""
+    try:
+        prefix = "lotto_log_"
+        files = [f for f in os.listdir(directory) if f.startswith(prefix)]
+        if not files:
+            raise FileNotFoundError(f"Lotto log file ({prefix}OOOO) not found.")
+        return max(files, key=lambda x: int(re.search(r'(\d+)\.txt$', x).group(1)))
+    except (ValueError, AttributeError):
+        raise ValueError("Invalid log file name format found.")
+    except Exception as e:
+        raise Exception(str(e))
+
+def process_lotto_results(filename):
+    """구매한 최신 회차 중 당첨 여부 확인"""
+    round_num = re.search(r'lotto_log_(\d+)\.txt', filename).group(1)
+    url = f"https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo={round_num}"
+    response = requests.get(url)  # 당첨 번호 조회 url 요청
+    if response.status_code != 200:
+        raise Exception(f"{round_num}회차 당첨 정보를 조회할 수 없습니다.")
+    lotto_data = response.json()
+    if lotto_data.get("returnValue") != "success":
+        raise Exception(f"{round_num}회차 당첨 정보가 아직 없습니다.")
+
+    # 당첨 번호 세트 및 당첨 번호 확인 알고리즘 생성
+    draw_date = lotto_data['drwNoDate']
+    winning_numbers = {lotto_data[f'drwtNo{i}'] for i in range(1, 7)}
+    bonus_number = lotto_data['bnusNo']
+    def check_prize(numbers):
+        matched = len(set(numbers) & winning_numbers)
+        prize_dict = {
+            6: "1등!(6)",
+            5: "2등!(5+)" if bonus_number in numbers else "3등!(5)",
+            4: "4등!(4)",
+            3: "5등!(3)",
+            2: "낙첨(2)",
+            1: "낙첨(1)",
+            0: "낙첨(0)"
+        }
+        return prize_dict[matched]
+
+    # 파일 읽기 및 파싱
+    log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'log')
+    log_path = os.path.join(log_dir, filename)
+    with open(log_path, 'r+', encoding='utf-8') as f:
+        content = f.read()
+        if "당첨 결과" in content:
+            return "이미 당첨 확인하셨습니다."
+
+        # 구매한 로또 번호 파싱
+        pattern = r'│\s+([A-E])\s+│\s+(\S+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│'
+        matches = re.finditer(pattern, content)
+        results = []
+        for match in matches:
+            slot = match.group(1)  # A, B, C, D, E
+            mode = match.group(2)  # 자동/반자동/수동
+            # 숫자는 정수형으로 변환하여 당첨 확인에 사용
+            numbers = [int(match.group(i)) for i in range(3, 9)]
+            prize = check_prize(numbers)
+            # 결과 저장 시 숫자를 두 자리 문자열로 변환
+            formatted_numbers = [f"{num:02d}" for num in numbers]
+            result = [slot, mode] + formatted_numbers
+            result.append(prize)
+            results.append(result)
+
+        # 당첨 결과 기록
+        output_lines = []
+        winning_str = [f"{num:02d}" for num in sorted(list(winning_numbers))]
+        bonus_str = f"({bonus_number:02d})"
+        output_lines.append(f"\n=== {round_num}회차 당첨 결과 ({draw_date})===")
+        output_lines.append(f"당첨 번호: [{', '.join(winning_str)}, {bonus_str}]")
+        for result in results:
+            formatted_result = ", ".join(str(x) for x in result)
+            output_lines.append(f"[{formatted_result}]")
+        overall_results = '\n'.join(output_lines) + '\n'
+        f.write(overall_results)
+        return overall_results
+
 
 if __name__ == "__main__":
     msg_str = check_buy_and_report_lotto()
-    if DISCORD_BOT:
-        send_message(msg_str)
+    print(msg_str)
+    file = get_latest_log_file()
+    print(file)
+    res = process_lotto_results(file)
+    print(res)
