@@ -50,7 +50,7 @@ def get_lotto_round_and_target_date(target_date):
     return round_number, target_saturday
 
 def check_error_in_stderr(stderr_output: str) -> Exception:
-    """표준 에러 출력을 확인하고 해당되는 예외를 발생"""
+    """dhapi 사용 후 표준 에러 출력을 확인하고 해당되는 예외를 발생"""
     error_types = {
         "FileNotFoundError": FileNotFoundError,
         "KeyError": KeyError,
@@ -102,38 +102,21 @@ def extract_lotto_numbers(log_path, round_number, target_saturday):
         overall_results = '\n'.join(output_lines) + '\n'
         return overall_results
 
-def check_buy_and_report_lotto():
+def check_buy_and_report_lotto(log_dir):
     """에치금 확인, 로또 구매 및 결과 기록을 수행"""
     today = datetime.now().strftime('%Y-%m-%d')
-    today_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     round_number, target_saturday = get_lotto_round_and_target_date(today)
-    log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'log')
-    os.makedirs(log_dir, exist_ok=True)
     log_filename = f'lotto_log_{round_number}.txt'
     log_path = os.path.join(log_dir, log_filename)
-
-    try:
-        result_check = run_dhapi_command(['dhapi', 'show-balance'])
-        result_buy = run_dhapi_command(['dhapi', 'buy-lotto645', '-y'])
-        log_content = (
-            f"=== {round_number}회 ({target_saturday} 추첨)==="
-            f"\n{result_check.stdout}\n{result_buy.stdout}\n"
-        )
-        write_to_log(log_path, log_content)
-        res = extract_lotto_numbers(log_path, round_number, target_saturday)
-        return res
-
-    except (RuntimeError, ValueError, FileNotFoundError, KeyError) as e:
-        error_log_path = os.path.join(log_dir, 'lotto_error.log')
-        with open(error_log_path, 'a') as f:
-            f.write(f"{today_datetime} - {str(e)}\n")
-        return str(e)
-
-    except Exception as e:
-        error_log_path = os.path.join(log_dir, 'lotto_error.log')
-        with open(error_log_path, 'a') as f:
-            f.write(f"{today_datetime} - {str(e)}\n")
-        return str(e)
+    result_check = run_dhapi_command(['dhapi', 'show-balance'])
+    result_buy = run_dhapi_command(['dhapi', 'buy-lotto645', '-y'])
+    log_content = (
+        f"=== {round_number}회 ({target_saturday} 추첨)==="
+        f"\n{result_check.stdout}\n{result_buy.stdout}\n"
+    )
+    write_to_log(log_path, log_content)
+    res = extract_lotto_numbers(log_path, round_number, target_saturday)
+    return res
 
 """
 2. 최근 구매 내역 파일(lotto_log_OOOO.txt) 열기 -> 당첨 결과 확인 및 기록 -> 디스코드 알림
@@ -152,7 +135,7 @@ def get_latest_log_file(directory='log'):
     except Exception as e:
         raise Exception(str(e))
 
-def process_lotto_results(filename):
+def process_lotto_results(filename, log_dir):
     """구매한 최신 회차 중 당첨 여부 확인"""
     round_num = re.search(r'lotto_log_(\d+)\.txt', filename).group(1)
     url = f"https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo={round_num}"
@@ -181,7 +164,6 @@ def process_lotto_results(filename):
         return prize_dict[matched]
 
     # 파일 읽기 및 파싱
-    log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'log')
     log_path = os.path.join(log_dir, filename)
     with open(log_path, 'r+', encoding='utf-8') as f:
         content = f.read()
@@ -219,11 +201,41 @@ def process_lotto_results(filename):
 
 
 if __name__ == "__main__":
-    # msg_str = check_buy_and_report_lotto()
-    # print(msg_str)
-    round_number, target_saturday = get_lotto_round_and_target_date(datetime.now().strftime('%Y-%m-%d'))
-    res = extract_lotto_numbers('log/lotto_log_1144.txt', round_number, target_saturday)
-    print(res)
-    file = get_latest_log_file()
-    res = process_lotto_results(file)
-    print(res)
+    log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'log')
+    os.makedirs(log_dir, exist_ok=True)
+    today_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    def handle_error_1(e, log_dir, today_datetime):
+        """에러 로깅 및 출력을 처리하는 함수1 (dhapi으로부터 기록된 stderr에서 파싱한 것)"""
+        error_log_path = os.path.join(log_dir, 'lotto_error.log')
+        with open(error_log_path, 'a') as f:
+            f.write(f"{today_datetime} - {str(e)}\n")
+        print(str(e))
+
+    def handle_error_2(e, log_dir, today_datetime):
+        """에러 로깅 및 출력을 처리하는 함수2 """
+        error_message = f"{type(e).__name__}: {str(e)}"
+        error_log_path = os.path.join(log_dir, 'lotto_error.log')
+        with open(error_log_path, 'a') as f:
+            f.write(f"{today_datetime} - {error_message}\n")
+        print(error_message)
+
+    try:
+        msg_str = check_buy_and_report_lotto(log_dir)
+        print(msg_str)
+        round_number, target_saturday = get_lotto_round_and_target_date(datetime.now().strftime('%Y-%m-%d'))
+        res = extract_lotto_numbers('log/lotto_log_1144.txt', round_number, target_saturday)
+        print(res)
+    except (RuntimeError, ValueError, AttributeError, FileNotFoundError, KeyError) as e:
+        handle_error_1(e, log_dir, today_datetime)
+    except Exception as e:
+        handle_error_1(e, log_dir, today_datetime)
+
+    try:
+        file = get_latest_log_file()
+        res = process_lotto_results(file, log_dir)
+        print(res)
+    except (RuntimeError, ValueError, AttributeError, FileNotFoundError, KeyError) as e:
+        handle_error_2(e, log_dir, today_datetime)
+    except Exception as e:
+        handle_error_2(e, log_dir, today_datetime)
