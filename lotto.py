@@ -58,7 +58,6 @@ def check_error_in_stderr(stderr_output: str) -> Exception:
         "ValueError": ValueError
     }
     error_message = stderr_output.strip()
-    # 예외 처리
     for error_name, error_class in error_types.items():
         if error_name in stderr_output:
             raise error_class(error_message)
@@ -130,7 +129,7 @@ def process_lotto_results(filename):
     """구매한 최신 회차 중 당첨 여부 확인"""
     round_num = re.search(r'lotto_log_(\d+)\.txt', filename).group(1)
     url = f"https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo={round_num}"
-    response = requests.get(url)  # 당첨 번호 조회 url 요청
+    response = requests.get(url)
     if response.status_code != 200:
         raise Exception(f"{round_num}회차 당첨 정보를 조회할 수 없습니다.")
     lotto_data = response.json()
