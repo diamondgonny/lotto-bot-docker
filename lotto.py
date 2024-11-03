@@ -47,7 +47,11 @@ def get_latest_log_file(directory="log"):
 
 def get_winning_numbers(round_num):
     """회차별 당첨번호를 가져옴"""
-    url = f"https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo={round_num}"
+    url = (
+        f"https://www.dhlottery.co.kr/common.do?"
+        f"method=getLottoNumber&"
+        f"drwNo={round_num}"
+    )
     response = requests.get(url)
     if response.status_code != 200:
         raise Exception(f"{round_num}회차 당첨 정보를 조회할 수 없습니다.")
@@ -86,7 +90,16 @@ def process_lotto_results(log_dir):
         if "당첨 결과" in content:
             return "이미 당첨 확인하셨습니다."
         # 구매한 로또 번호 파싱
-        pattern = r"│\s+([A-E])\s+│\s+(\S+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│"
+        pattern = (
+            r"│\s+([A-E])\s+│"
+            r"\s+(\S+)\s+│"
+            r"\s+(\d+)\s+│"
+            r"\s+(\d+)\s+│"
+            r"\s+(\d+)\s+│"
+            r"\s+(\d+)\s+│"
+            r"\s+(\d+)\s+│"
+            r"\s+(\d+)\s+│"
+        )
         matches = re.finditer(pattern, content)
         results = []
         for match in matches:
@@ -168,7 +181,16 @@ def report_lotto_numbers(log_path, round_number, target_saturday):
     """구매한 로또 번호 파싱하여 (디스코드에) 보고 준비"""
     with open(log_path, "r", encoding="utf-8") as f:
         content = f.read()
-        pattern = r"│\s+([A-E])\s+│\s+(\S+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│"
+        pattern = (
+            r"│\s+([A-E])\s+│"
+            r"\s+(\S+)\s+│"
+            r"\s+(\d+)\s+│"
+            r"\s+(\d+)\s+│"
+            r"\s+(\d+)\s+│"
+            r"\s+(\d+)\s+│"
+            r"\s+(\d+)\s+│"
+            r"\s+(\d+)\s+│"
+        )
         matches = re.finditer(pattern, content)
         results = []
         for match in matches:
