@@ -76,6 +76,31 @@ def write_to_log(file_path, content, mode='a'):
     with open(file_path, mode) as f:
         f.write(content)
 
+def extract_lotto_numbers(log_path, round_number):
+    """구매한 로또 번호 파싱"""
+    with open(log_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+        pattern = r'│\s+([A-E])\s+│\s+(\S+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│'
+        matches = re.finditer(pattern, content)
+        results = []
+        for match in matches:
+            slot = match.group(1)  # A, B, C, D, E
+            mode = match.group(2)  # 자동/반자동/수동
+            # 숫자는 정수형으로 변환하여 당첨 확인에 사용
+            numbers = [int(match.group(i)) for i in range(3, 9)]
+            # 결과 저장 시 숫자를 두 자리 문자열로 변환
+            formatted_numbers = [f"{num:02d}" for num in numbers]
+            result = [slot, mode] + formatted_numbers
+            results.append(result)
+        # 구매 번호만 기록
+        output_lines = []
+        output_lines.append(f"=== {round_number}회차 로또6/45 복권을 구매하였습니다 ===")
+        for result in results:
+            formatted_result = ", ".join(str(x) for x in result)
+            output_lines.append(f"[{formatted_result}]")
+        overall_results = '\n'.join(output_lines) + '\n'
+        return overall_results
+
 def check_buy_and_report_lotto():
     """에치금 확인, 로또 구매 및 결과 기록을 수행"""
     today = datetime.now().strftime('%Y-%m-%d')
@@ -94,7 +119,8 @@ def check_buy_and_report_lotto():
             f"\n{result_check.stdout}\n{result_buy.stdout}\n"
         )
         write_to_log(log_path, log_content)
-        return "로또6/45 복권을 구매하였습니다."
+        res = extract_lotto_numbers(log_path, round_number)
+        return res
 
     except (RuntimeError, ValueError, FileNotFoundError, KeyError) as e:
         error_log_path = os.path.join(log_dir, 'lotto_error.log')
@@ -192,9 +218,10 @@ def process_lotto_results(filename):
 
 
 if __name__ == "__main__":
-    msg_str = check_buy_and_report_lotto()
-    print(msg_str)
+    # msg_str = check_buy_and_report_lotto()
+    # print(msg_str)
+    res = extract_lotto_numbers('log/lotto_log_1144.txt', 1144)
+    print(res)
     file = get_latest_log_file()
-    print(file)
     res = process_lotto_results(file)
     print(res)
