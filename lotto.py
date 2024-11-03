@@ -23,7 +23,7 @@ discord_webhook_url="https://discord.com/api/webhooks/______"
 def send_message(msg):
     """디스코드 메세지 전송"""
     if DISCORD_BOT:
-        discord_webhook_url = os.getenv('discord_webhook_url')
+        discord_webhook_url = os.getenv("discord_webhook_url")
         message = {"content": f"{str(msg)}"}
         requests.post(discord_webhook_url, data=message)
 
@@ -32,14 +32,14 @@ def send_message(msg):
 1. 최근 구매 내역 파일(lotto_log_OOOO.txt) 열기 -> 당첨 결과 확인 및 기록 -> 디스코드 알림
 """
 
-def get_latest_log_file(directory='log'):
+def get_latest_log_file(directory="log"):
     """저장된 최근 구매 내역 (최신 회차) 파일을 가져옴"""
     try:
         prefix = "lotto_log_"
         files = [f for f in os.listdir(directory) if f.startswith(prefix)]
         if not files:
             raise FileNotFoundError(f"Lotto log file ({prefix}OOOO) not found.")
-        return max(files, key=lambda x: int(re.search(r'(\d+)\.txt$', x).group(1)))
+        return max(files, key=lambda x: int(re.search(r"(\d+)\.txt$", x).group(1)))
     except (ValueError, AttributeError):
         raise ValueError("Invalid log file name format found.")
     except Exception as e:
@@ -73,20 +73,20 @@ def check_prize(numbers, winning_numbers, bonus_number):
 def process_lotto_results(log_dir):
     """구매한 최신 회차의 당첨 여부 확인"""
     filename = get_latest_log_file(log_dir)
-    round_num = re.search(r'lotto_log_(\d+)\.txt', filename).group(1)
+    round_num = re.search(r"lotto_log_(\d+)\.txt", filename).group(1)
     lotto_data = get_winning_numbers(round_num)
-    draw_date = lotto_data['drwNoDate']
-    winning_numbers = {lotto_data[f'drwtNo{i}'] for i in range(1, 7)}
-    bonus_number = lotto_data['bnusNo']
+    draw_date = lotto_data["drwNoDate"]
+    winning_numbers = {lotto_data[f"drwtNo{i}"] for i in range(1, 7)}
+    bonus_number = lotto_data["bnusNo"]
 
     # 지난 번 구매한 로또 번호 기록 파일 열어서 처리
     log_path = os.path.join(log_dir, filename)
-    with open(log_path, 'r+', encoding='utf-8') as f:
+    with open(log_path, "r+", encoding="utf-8") as f:
         content = f.read()
         if "당첨 결과" in content:
             return "이미 당첨 확인하셨습니다."
         # 구매한 로또 번호 파싱
-        pattern = r'│\s+([A-E])\s+│\s+(\S+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│'
+        pattern = r"│\s+([A-E])\s+│\s+(\S+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│"
         matches = re.finditer(pattern, content)
         results = []
         for match in matches:
@@ -105,11 +105,11 @@ def process_lotto_results(log_dir):
         winning_str = [f"{num:02d}" for num in sorted(list(winning_numbers))]
         bonus_str = f"({bonus_number:02d})"
         output_lines.append(f"\n=== {round_num}회({draw_date} 추첨) 당첨 결과 ===")
-        output_lines.append(f"당첨 번호: [{', '.join(winning_str)}, {bonus_str}]")
+        output_lines.append(f"당첨 번호: [{", ".join(winning_str)}, {bonus_str}]")
         for result in results:
             formatted_result = ", ".join(str(x) for x in result)
             output_lines.append(f"[{formatted_result}]")
-        overall_results = '\n'.join(output_lines) + '\n'
+        overall_results = "\n".join(output_lines) + "\n"
         f.write(overall_results)
         return overall_results
 
@@ -122,7 +122,7 @@ def get_lotto_round_and_target_date(target_date):
     """주어진 날짜의 로또 회차와 추첨일 계산해서 가져옴"""
     # 입력받은 날짜를 datetime 객체로 변환 (이미 datetime인 경우는 그대로 사용)
     if isinstance(target_date, str):
-        target_date = datetime.strptime(target_date, '%Y-%m-%d')
+        target_date = datetime.strptime(target_date, "%Y-%m-%d")
         first_round_date = datetime(2002, 12, 7)
         if target_date < first_round_date:
             return None
@@ -159,16 +159,16 @@ def run_dhapi_command(cmd):
         check_error_in_stderr(result.stderr)
     return result
 
-def write_to_log(file_path, content, mode='a'):
+def write_to_log(file_path, content, mode="a"):
     """구매한 로또 내역 로그 파일에 기록"""
     with open(file_path, mode) as f:
         f.write(content)
 
 def report_lotto_numbers(log_path, round_number, target_saturday):
     """구매한 로또 번호 파싱하여 (디스코드에) 보고 준비"""
-    with open(log_path, 'r', encoding='utf-8') as f:
+    with open(log_path, "r", encoding="utf-8") as f:
         content = f.read()
-        pattern = r'│\s+([A-E])\s+│\s+(\S+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│'
+        pattern = r"│\s+([A-E])\s+│\s+(\S+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│\s+(\d+)\s+│"
         matches = re.finditer(pattern, content)
         results = []
         for match in matches:
@@ -181,25 +181,25 @@ def report_lotto_numbers(log_path, round_number, target_saturday):
             result = [slot, mode] + formatted_numbers
             results.append(result)
     output_lines = []
-    target_saturday_ymd = target_saturday.strftime('%Y-%m-%d')
+    target_saturday_ymd = target_saturday.strftime("%Y-%m-%d")
     output_lines.append(f"=== {round_number}회({target_saturday_ymd} 추첨) 구매 완료 ===")
     for result in results:
         formatted_result = ", ".join(str(x) for x in result)
         output_lines.append(f"[{formatted_result}]")
-    return '\n'.join(output_lines) + '\n'
+    return "\n".join(output_lines) + "\n"
 
 def check_buy_and_report_lotto(log_dir):
     """에치금 확인, 로또 구매 및 기록"""
-    today = datetime.now().strftime('%Y-%m-%d')
+    today = datetime.now().strftime("%Y-%m-%d")
     round_number, target_saturday = get_lotto_round_and_target_date(today)
-    log_filename = f'lotto_log_{round_number}.txt'
+    log_filename = f"lotto_log_{round_number}.txt"
     log_path = os.path.join(log_dir, log_filename)
 
     # 잔액 확인 및 로또 구매 실행 (check)
-    result_check = run_dhapi_command(['dhapi', 'show-balance'])
+    result_check = run_dhapi_command(["dhapi", "show-balance"])
 
     # 로그 파일 작성 (buy)
-    result_buy = run_dhapi_command(['dhapi', 'buy-lotto645', '-y'])
+    result_buy = run_dhapi_command(["dhapi", "buy-lotto645", "-y"])
     log_content = (
         f"=== {round_number}회 ({target_saturday} 추첨)==="
         f"\n{result_check.stdout}\n{result_buy.stdout}\n"
@@ -212,22 +212,22 @@ def check_buy_and_report_lotto(log_dir):
 
 
 if __name__ == "__main__":
-    log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'log')
+    log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "log")
     os.makedirs(log_dir, exist_ok=True)
-    today_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    today_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     def handle_error_1(e, log_dir, today_datetime):
         """에러 로깅 및 출력을 처리하는 함수1 """
         error_message = f"{type(e).__name__}: {str(e)}"
-        error_log_path = os.path.join(log_dir, 'lotto_error.log')
-        with open(error_log_path, 'a') as f:
+        error_log_path = os.path.join(log_dir, "lotto_error.log")
+        with open(error_log_path, "a") as f:
             f.write(f"{today_datetime} - {error_message}\n")
         print(error_message)
 
     def handle_error_2(e, log_dir, today_datetime):
         """에러 로깅 및 출력을 처리하는 함수2 (dhapi으로부터 기록된 stderr에서 파싱한 것)"""
-        error_log_path = os.path.join(log_dir, 'lotto_error.log')
-        with open(error_log_path, 'a') as f:
+        error_log_path = os.path.join(log_dir, "lotto_error.log")
+        with open(error_log_path, "a") as f:
             f.write(f"{today_datetime} - {str(e)}\n")
         print(str(e))
 
@@ -242,8 +242,8 @@ if __name__ == "__main__":
     try:
         msg_str = check_buy_and_report_lotto(log_dir)
         print(msg_str)
-        round_number, target_saturday = get_lotto_round_and_target_date(datetime.now().strftime('%Y-%m-%d'))
-        res = report_lotto_numbers('log/lotto_log_1144.txt', round_number, target_saturday)
+        round_number, target_saturday = get_lotto_round_and_target_date(datetime.now().strftime("%Y-%m-%d"))
+        res = report_lotto_numbers("log/lotto_log_1144.txt", round_number, target_saturday)
         print(res)
     except (RuntimeError, ValueError, AttributeError, FileNotFoundError, KeyError) as e:
         handle_error_2(e, log_dir, today_datetime)
