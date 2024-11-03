@@ -76,7 +76,7 @@ def write_to_log(file_path, content, mode='a'):
     with open(file_path, mode) as f:
         f.write(content)
 
-def extract_lotto_numbers(log_path, round_number):
+def extract_lotto_numbers(log_path, round_number, target_saturday):
     """구매한 로또 번호 파싱"""
     with open(log_path, 'r', encoding='utf-8') as f:
         content = f.read()
@@ -94,7 +94,8 @@ def extract_lotto_numbers(log_path, round_number):
             results.append(result)
         # 구매 번호만 기록
         output_lines = []
-        output_lines.append(f"=== {round_number}회차 로또6/45 복권을 구매하였습니다 ===")
+        target_saturday_ymd = target_saturday.strftime('%Y-%m-%d')
+        output_lines.append(f"=== {round_number}회({target_saturday_ymd} 추첨) 구매 완료 ===")
         for result in results:
             formatted_result = ", ".join(str(x) for x in result)
             output_lines.append(f"[{formatted_result}]")
@@ -119,7 +120,7 @@ def check_buy_and_report_lotto():
             f"\n{result_check.stdout}\n{result_buy.stdout}\n"
         )
         write_to_log(log_path, log_content)
-        res = extract_lotto_numbers(log_path, round_number)
+        res = extract_lotto_numbers(log_path, round_number, target_saturday)
         return res
 
     except (RuntimeError, ValueError, FileNotFoundError, KeyError) as e:
@@ -207,7 +208,7 @@ def process_lotto_results(filename):
         output_lines = []
         winning_str = [f"{num:02d}" for num in sorted(list(winning_numbers))]
         bonus_str = f"({bonus_number:02d})"
-        output_lines.append(f"\n=== {round_num}회차 당첨 결과 ({draw_date})===")
+        output_lines.append(f"\n=== {round_num}회({draw_date} 추첨) 당첨 결과 ===")
         output_lines.append(f"당첨 번호: [{', '.join(winning_str)}, {bonus_str}]")
         for result in results:
             formatted_result = ", ".join(str(x) for x in result)
@@ -220,7 +221,8 @@ def process_lotto_results(filename):
 if __name__ == "__main__":
     # msg_str = check_buy_and_report_lotto()
     # print(msg_str)
-    res = extract_lotto_numbers('log/lotto_log_1144.txt', 1144)
+    round_number, target_saturday = get_lotto_round_and_target_date(datetime.now().strftime('%Y-%m-%d'))
+    res = extract_lotto_numbers('log/lotto_log_1144.txt', round_number, target_saturday)
     print(res)
     file = get_latest_log_file()
     res = process_lotto_results(file)
