@@ -6,6 +6,9 @@ from dotenv import load_dotenv
 
 DISCORD_BOT = True
 
+if DISCORD_BOT:
+    load_dotenv()
+
 """
 1) ~/.dhapi/credentials 파일 내 동행복권 ID/PW 저장 [필수]
 [default]
@@ -15,8 +18,13 @@ password = "______"
 discord_webhook_url="https://discord.com/api/webhooks/______"
 """
 
-if DISCORD_BOT:
-    load_dotenv()
+
+def send_message(msg):
+    """디스코드 메세지 전송"""
+    if DISCORD_BOT:
+        discord_webhook_url = os.getenv('discord_webhook_url')
+        message = {"content": f"{str(msg)}"}
+        requests.post(discord_webhook_url, data=message)
 
 def get_lotto_round_and_target_date(target_date):
     """주어진 날짜의 로또 회차와 추첨일 계산"""
@@ -96,12 +104,6 @@ def check_buy_and_report_lotto():
         with open(error_log_path, 'a') as f:
             f.write(f"{today_datetime} - {str(e)}\n")
         return str(e)
-
-def send_message(msg):
-    """디스코드 메세지 전송"""
-    discord_webhook_url = os.getenv('discord_webhook_url')
-    message = {"content": f"{str(msg)}"}
-    requests.post(discord_webhook_url, data=message)
 
 
 if __name__ == "__main__":
