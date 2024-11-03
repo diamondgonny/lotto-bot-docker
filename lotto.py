@@ -54,10 +54,10 @@ def get_winning_numbers(round_number):
     )
     response = requests.get(url)
     if response.status_code != 200:
-        raise Exception(f"{round_number}회차 당첨 정보를 조회할 수 없습니다.")
+        raise requests.RequestException(f"{round_number}회차 당첨 정보를 조회할 수 없습니다.")
     lotto_data = response.json()
     if lotto_data.get("returnValue") != "success":
-        raise Exception(f"{round_number}회차 당첨 정보가 아직 없습니다.")
+        raise RuntimeError(f"{round_number}회차 당첨 정보가 아직 없습니다.")
     return lotto_data
 
 def check_prize(numbers, winning_numbers, bonus_number):
