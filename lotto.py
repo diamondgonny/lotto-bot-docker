@@ -246,30 +246,34 @@ if __name__ == "__main__":
         error_log_path = os.path.join(log_dir, "lotto_error.log")
         with open(error_log_path, "a") as f:
             f.write(f"{today_datetime} - {error_message}\n")
-        print(error_message)
+        return error_message
 
     def handle_error_2(e, log_dir, today_datetime):
         """에러 로깅 및 출력을 처리하는 함수2 (dhapi으로부터 기록된 stderr에서 파싱한 것)"""
         error_log_path = os.path.join(log_dir, "lotto_error.log")
         with open(error_log_path, "a") as f:
             f.write(f"{today_datetime} - {str(e)}\n")
-        print(str(e))
+        return str(e)
 
     try:
         result_1 = process_lotto_results(log_dir)
-        print(result_1)
+        send_message_to_discord(result_1)
     except (RuntimeError, ValueError, AttributeError, FileNotFoundError, KeyError) as e:
-        handle_error_1(e, log_dir, today_datetime)
+        error_msg_1 = handle_error_1(e, log_dir, today_datetime)
+        send_message_to_discord(error_msg_1)
     except Exception as e:
-        handle_error_1(e, log_dir, today_datetime)
+        error_msg_1 = handle_error_1(e, log_dir, today_datetime)
+        send_message_to_discord(error_msg_1)
 
     try:
         result_2 = check_buy_and_report_lotto(log_dir)
-        print(result_2)
+        send_message_to_discord(result_2)
         # round_number, target_saturday = get_lotto_round_and_target_date(datetime.now().strftime("%Y-%m-%d"))
         # res = report_lotto_numbers("log/lotto_log_1144.txt", round_number, target_saturday)
-        # print(res)
+        # send_message_to_discord(res)
     except (RuntimeError, ValueError, AttributeError, FileNotFoundError, KeyError) as e:
-        handle_error_2(e, log_dir, today_datetime)
+        error_msg_2 = handle_error_2(e, log_dir, today_datetime)
+        send_message_to_discord(error_msg_2)
     except Exception as e:
-        handle_error_2(e, log_dir, today_datetime)
+        error_msg_2 = handle_error_2(e, log_dir, today_datetime)
+        send_message_to_discord(error_msg_2)
