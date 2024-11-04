@@ -37,12 +37,12 @@ def get_latest_log_file(directory="log"):
     prefix = "lotto_log_"
     files = [f for f in os.listdir(directory) if f.startswith(prefix)]
     if not files:
-        raise FileNotFoundError(f"Lotto log file ({prefix}OOOO) not found.")
+        raise FileNotFoundError(f"로또 구매 내역({prefix}OOOO.txt)을 찾을 수 없습니다.")
     # 파일 이름에서 몇 회차인지 숫자 추출
     def extract_number_from_filename(filename):
         match = re.search(r"^lotto_log_(\d+)\.txt$", filename)
         if not match:
-            raise AttributeError(f"Invalid log filename format found ({filename})")
+            raise AttributeError(f"올바르지 않은 파일명 형식({filename})입니다.")
         return int(match.group(1))
     return max(files, key=extract_number_from_filename)
 
