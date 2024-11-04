@@ -43,13 +43,13 @@ def get_latest_log_file(directory="log"):
         # 파일명 포멧팅 검증 (OOOO은 숫자)
         valid_files = []
         for f in files:
-            match = re.search(r"(\d+)\.txt$", f)
+            match = re.search(r"^lotto_log_(\d+)\.txt$", f)
             if not match:
                 raise AttributeError(f"Invalid log file name format found ({f})")
             if not match.group(1).isdigit():
                 raise ValueError(f"Invalid log file name format found ({f})")
             valid_files.append(f)
-        return max(valid_files, key=lambda x: int(re.search(r"(\d+)\.txt$", x).group(1)))
+        return max(valid_files, key=lambda x: int(re.search(r"^lotto_log_(\d+)\.txt$", x).group(1)))
     except FileNotFoundError as e:
         raise e
     except (AttributeError, ValueError) as e:
@@ -89,7 +89,7 @@ def check_prize(numbers, winning_numbers, bonus_number):
 def process_lotto_results(log_dir):
     """구매한 최신 회차의 당첨 여부 확인"""
     filename = get_latest_log_file(log_dir)
-    round_num = re.search(r"lotto_log_(\d+)\.txt", filename).group(1)
+    round_num = re.search(r"^lotto_log_(\d+)\.txt$", filename).group(1)
     lotto_data = get_winning_numbers(round_num)
     draw_date = lotto_data["drwNoDate"]
     winning_numbers = {lotto_data[f"drwtNo{i}"] for i in range(1, 7)}
