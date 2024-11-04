@@ -78,8 +78,8 @@ def check_prize(numbers, winning_numbers, bonus_number):
 def process_lotto_results(log_dir):
     """구매한 최신 회차의 당첨 여부 확인"""
     filename = get_latest_log_file(log_dir)
-    round_num = re.search(r"^lotto_log_(\d+)\.txt$", filename).group(1)
-    lotto_data = get_winning_numbers(round_num)
+    round_number = re.search(r"^lotto_log_(\d+)\.txt$", filename).group(1)
+    lotto_data = get_winning_numbers(round_number)
     draw_date = lotto_data["drwNoDate"]
     winning_numbers = {lotto_data[f"drwtNo{i}"] for i in range(1, 7)}
     bonus_number = lotto_data["bnusNo"]
@@ -118,7 +118,7 @@ def process_lotto_results(log_dir):
         output_lines = []
         winning_str = [f"{num:02d}" for num in sorted(list(winning_numbers))]
         bonus_str = f"({bonus_number:02d})"
-        output_lines.append(f"\n=== {round_num}회({draw_date} 추첨) 당첨 결과 ===")
+        output_lines.append(f"\n=== {round_number}회({draw_date} 추첨) 당첨 결과 ===")
         output_lines.append(f"당첨 번호: [{", ".join(winning_str)}, {bonus_str}]")
         for result in results:
             formatted_result = ", ".join(str(x) for x in result)
