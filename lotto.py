@@ -12,11 +12,11 @@ if DISCORD_BOT:
 
 
 """
-1) ~/.dhapi/credentials 파일 내 동행복권 ID/PW 저장 [필수]
+1)[필수] 동행복권 로그인: ~/.dhapi/credentials 파일 내 동행복권 ID/PW 저장
 [default]
 username = "______"
 password = "______"
-2) .env 파일 내 디스코드 웹훅 URL 저장 [선택: DISCORD_BOT = True로 설정]
+2)[선택] 디스코드 알림봇: .env 파일 내 디스코드 웹훅 URL 저장 (DISCORD_BOT = True로 설정)
 discord_webhook_url="https://discord.com/api/webhooks/______"
 """
 
@@ -218,10 +218,8 @@ def check_buy_and_report_lotto(log_dir):
     round_number, target_saturday = get_lotto_round_and_target_date(today)
     log_filename = f"lotto_log_{round_number}.txt"
     log_path = os.path.join(log_dir, log_filename)
-
     # 잔액 확인 및 로또 구매 실행 (check)
     result_check = run_dhapi_command(["dhapi", "show-balance"])
-
     # 로그 파일 작성 (buy)
     result_buy = run_dhapi_command([
         "dhapi",
@@ -237,7 +235,6 @@ def check_buy_and_report_lotto(log_dir):
         f"=== {round_number}회 ({target_saturday} 추첨)==="
         f"\n{result_check.stdout}\n{result_buy.stdout}\n"
     )
-
     # 오늘 구매한 로또 번호 기록 및 보고 준비 (report)
     write_to_log(log_path, log_content)
     result_report = report_lotto_numbers(log_path, round_number, target_saturday)
@@ -245,12 +242,13 @@ def check_buy_and_report_lotto(log_dir):
 
 
 if __name__ == "__main__":
+    """로깅: 1)[필수] log 폴더에 저장, 2)[선택] discord에 알림"""
     log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "log")
     os.makedirs(log_dir, exist_ok=True)
     today_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     def handle_error_1(e, log_dir, today_datetime):
-        """에러 로깅 및 출력을 처리하는 함수1 """
+        """에러 로깅 및 출력을 처리하는 함수1"""
         error_message = f"{type(e).__name__}: {str(e)}"
         error_log_path = os.path.join(log_dir, "lotto_error.log")
         with open(error_log_path, "a") as f:
@@ -275,7 +273,7 @@ if __name__ == "__main__":
         send_message_to_discord(error_msg_1)
 
     try:
-        result_2 = check_buy_and_report_lotto(log_dir)
+        result_2 = check_buy_and_report_lotto(log_dir) # 실제 로또 구매 알고리즘 작동 주의 (회차당 한도 5000원)
         send_message_to_discord(result_2)
         # round_number, target_saturday = get_lotto_round_and_target_date(datetime.now().strftime("%Y-%m-%d"))
         # res = report_lotto_numbers("log/lotto_log_1144.txt", round_number, target_saturday)
