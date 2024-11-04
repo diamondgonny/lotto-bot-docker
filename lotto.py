@@ -20,12 +20,13 @@ password = "______"
 discord_webhook_url="https://discord.com/api/webhooks/______"
 """
 
-def send_message(msg):
+def send_message_to_discord(msg):
     """디스코드 메세지 전송"""
-    if DISCORD_BOT:
-        discord_webhook_url = os.getenv("discord_webhook_url")
-        message = {"content": f"{str(msg)}"}
-        requests.post(discord_webhook_url, data=message)
+    if not DISCORD_BOT:
+        return
+    discord_webhook_url = os.getenv("discord_webhook_url")
+    message = {"content": f"{str(msg)}"}
+    requests.post(discord_webhook_url, data=message)
 
 
 """
