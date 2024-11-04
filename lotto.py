@@ -5,10 +5,16 @@ import requests
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
-DISCORD_BOT = True
+
+DISCORD_BOT = False  # True: 알림봇 사용, False: 알림봇 미사용
+USE_VENV = True      # True: 가상환경, False: 시스템 환경
+VENV = "venv"        # (가상환경 사용시) 가상환경 폴더 이름
 
 if DISCORD_BOT:
     load_dotenv()
+SYSTEM_PATH = "/usr/local/bin"
+VENV_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), VENV, "bin")
+DHAPI_PATH = os.path.join(VENV_PATH if USE_VENV else SYSTEM_PATH, "dhapi")
 
 
 """
@@ -169,6 +175,10 @@ def check_error_in_stderr(stderr_output: str) -> Exception:
 
 def run_dhapi_command(cmd):
     """dhapi 명령어를 subprocess로 실행"""
+    if USE_VENV:
+        if not os.path.exists(VENV_PATH):
+            raise FileNotFoundError(f"가상환경 폴더 이름을 다시 확인하세요: {VENV}")
+    cmd[0] = DHAPI_PATH
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.stderr:
         check_error_in_stderr(result.stderr)
