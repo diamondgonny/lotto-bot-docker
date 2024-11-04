@@ -223,7 +223,16 @@ def check_buy_and_report_lotto(log_dir):
     result_check = run_dhapi_command(["dhapi", "show-balance"])
 
     # 로그 파일 작성 (buy)
-    result_buy = run_dhapi_command(["dhapi", "buy-lotto645", "-y"])
+    result_buy = run_dhapi_command([
+        "dhapi",
+        "buy-lotto645",
+        "-y",
+        "", # 슬롯 A (비어있으면 자동)
+        "", # 슬롯 B
+        "", # 슬롯 C
+        "", # 슬롯 D
+        ""  # 슬롯 E
+    ])
     log_content = (
         f"=== {round_number}회 ({target_saturday} 추첨)==="
         f"\n{result_check.stdout}\n{result_buy.stdout}\n"
