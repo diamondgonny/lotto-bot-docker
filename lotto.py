@@ -34,28 +34,17 @@ def send_message(msg):
 
 def get_latest_log_file(directory="log"):
     """저장된 최근 구매 내역 (최신 회차) 파일을 가져옴"""
-    try:
-        # lotto_log_OOOO 파일 존재 여부 검증
-        prefix = "lotto_log_"
-        files = [f for f in os.listdir(directory) if f.startswith(prefix)]
-        if not files:
-            raise FileNotFoundError(f"Lotto log file ({prefix}OOOO) not found.")
-        # 파일명 포멧팅 검증 (OOOO은 숫자)
-        valid_files = []
-        for f in files:
-            match = re.search(r"^lotto_log_(\d+)\.txt$", f)
-            if not match:
-                raise AttributeError(f"Invalid log file name format found ({f})")
-            if not match.group(1).isdigit():
-                raise ValueError(f"Invalid log file name format found ({f})")
-            valid_files.append(f)
-        return max(valid_files, key=lambda x: int(re.search(r"^lotto_log_(\d+)\.txt$", x).group(1)))
-    except FileNotFoundError as e:
-        raise e
-    except (AttributeError, ValueError) as e:
-        raise e
-    except Exception as e:
-        raise Exception(str(e))
+    prefix = "lotto_log_"
+    files = [f for f in os.listdir(directory) if f.startswith(prefix)]
+    if not files:
+        raise FileNotFoundError(f"Lotto log file ({prefix}OOOO) not found.")
+    # 파일 이름에서 몇 회차인지 숫자 추출
+    def extract_number_from_filename(filename):
+        match = re.search(r"^lotto_log_(\d+)\.txt$", filename)
+        if not match:
+            raise AttributeError(f"Invalid log filename format found ({filename})")
+        return int(match.group(1))
+    return max(files, key=extract_number_from_filename)
 
 def get_winning_numbers(round_number):
     """회차별 당첨번호를 가져옴"""
