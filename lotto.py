@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 
-DISCORD_BOT = False  # True: 알림봇 사용, False: 알림봇 미사용
+DISCORD_BOT = True   # True: 알림봇 사용, False: 알림봇 미사용
 USE_VENV = True      # True: 가상환경, False: 시스템 환경
 VENV = "venv"        # (가상환경 사용시) 가상환경 폴더 이름
 
