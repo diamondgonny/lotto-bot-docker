@@ -225,6 +225,7 @@ def report_lotto_numbers(log_path, round_number, target_saturday):
 def check_buy_and_report_lotto(log_dir):
     """에치금 확인, 로또 구매 및 기록"""
     today = datetime.now().strftime("%Y-%m-%d")
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     round_number, target_saturday = get_lotto_round_and_target_date(today)
     log_filename = f"lotto_log_{round_number}.txt"
     log_path = os.path.join(log_dir, log_filename)
@@ -242,8 +243,10 @@ def check_buy_and_report_lotto(log_dir):
         ""  # 슬롯 E
     ])
     log_content = (
-        f"=== {round_number}회 ({target_saturday} 추첨)==="
-        f"\n{result_check.stdout}\n{result_buy.stdout}\n"
+        f"=== {round_number}회 ({target_saturday} 추첨)===\n"
+        f"현재 시각: {current_time}\n"
+        f"{result_check.stdout}\n"
+        f"{result_buy.stdout}\n"
     )
     # 오늘 구매한 로또 번호 기록 및 보고 준비 (report)
     write_to_log(log_path, log_content)
