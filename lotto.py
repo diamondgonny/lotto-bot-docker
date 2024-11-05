@@ -158,7 +158,6 @@ def get_lotto_round_and_target_date(target_date):
     round_number = weeks_difference + 1
     # 추첨 생방송 시간을 20:35:00으로 설정
     target_saturday = target_saturday.replace(hour=20, minute=35, second=0)
-    target_saturday = KST.localize(target_saturday)
     return round_number, target_saturday
 
 def check_error_in_stderr(stderr_output: str) -> Exception:
