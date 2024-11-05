@@ -245,7 +245,7 @@ def check_buy_and_report_lotto(log_dir):
         ""  # 슬롯 E
     ])
     log_content = (
-        f"=== {round_number}회 ({target_saturday} 추첨)===\n"
+        f"=== {round_number}회 ({target_saturday.strftime('%Y-%m-%d %H:%M:%S')} 추첨)===\n"
         f"현재 시각: {current_time}\n"
         f"{result_check.stdout}\n"
         f"{result_buy.stdout}\n"
