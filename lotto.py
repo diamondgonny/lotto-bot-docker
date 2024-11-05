@@ -285,9 +285,6 @@ if __name__ == "__main__":
     try:
         result_2 = check_buy_and_report_lotto(log_dir) # 실제 로또 구매 알고리즘 작동 주의 (회차당 한도 5000원)
         send_message_to_discord(result_2)
-        # round_number, target_saturday = get_lotto_round_and_target_date(datetime.now().strftime("%Y-%m-%d"))
-        # res = report_lotto_numbers("log/lotto_log_1144.txt", round_number, target_saturday)
-        # send_message_to_discord(res)
     except (RuntimeError, ValueError, AttributeError, FileNotFoundError, KeyError) as e:
         error_msg_2 = handle_error_2(e, log_dir, today_datetime)
         send_message_to_discord(error_msg_2)
