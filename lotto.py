@@ -1,11 +1,13 @@
-import subprocess
 import os
+import pytz
 import re
 import requests
+import subprocess
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 
+KST = pytz.timezone('Asia/Seoul')
 DISCORD_BOT = True   # True: 알림봇 사용, False: 알림봇 미사용
 USE_VENV = True      # True: 가상환경, False: 시스템 환경
 VENV = "venv"        # (가상환경 사용시) 가상환경 폴더 이름
@@ -143,8 +145,8 @@ def get_lotto_round_and_target_date(target_date):
     """주어진 날짜의 로또 회차와 추첨일 계산해서 가져옴"""
     # 입력받은 날짜를 datetime 객체로 변환 (이미 datetime인 경우는 그대로 사용)
     if isinstance(target_date, str):
-        target_date = datetime.strptime(target_date, "%Y-%m-%d")
-        first_round_date = datetime(2002, 12, 7)
+        target_date = KST.localize(datetime.strptime(target_date, "%Y-%m-%d"))
+        first_round_date = KST.localize(datetime(2002, 12, 7))
         if target_date < first_round_date:
             return None
     # 해당 주의 토요일 찾기
@@ -155,7 +157,7 @@ def get_lotto_round_and_target_date(target_date):
     # 회차 계산 (1회차부터 시작하므로 +1)
     round_number = weeks_difference + 1
     # 추첨 생방송 시간을 20:35:00으로 설정
-    target_saturday = target_saturday.replace(hour=20, minute=35, second=0)
+    target_saturday = KST.localize(target_saturday.replace(hour=20, minute=35, second=0))
     return round_number, target_saturday
 
 def check_error_in_stderr(stderr_output: str) -> Exception:
@@ -224,8 +226,8 @@ def report_lotto_numbers(log_path, round_number, target_saturday):
 
 def check_buy_and_report_lotto(log_dir):
     """에치금 확인, 로또 구매 및 기록"""
-    today = datetime.now().strftime("%Y-%m-%d")
-    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    today = datetime.now(KST).strftime("%Y-%m-%d")
+    current_time = datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S")
     round_number, target_saturday = get_lotto_round_and_target_date(today)
     log_filename = f"lotto_log_{round_number}.txt"
     log_path = os.path.join(log_dir, log_filename)
@@ -258,7 +260,7 @@ if __name__ == "__main__":
     """로깅: 1)[필수] log 폴더에 저장, 2)[선택] discord에 알림"""
     log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "log")
     os.makedirs(log_dir, exist_ok=True)
-    today_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    today_datetime = datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S")
 
     def handle_error_1(e, log_dir, today_datetime):
         """에러 로깅 및 출력을 처리하는 함수1"""
