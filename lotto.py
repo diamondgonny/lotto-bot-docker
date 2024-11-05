@@ -157,7 +157,8 @@ def get_lotto_round_and_target_date(target_date):
     # 회차 계산 (1회차부터 시작하므로 +1)
     round_number = weeks_difference + 1
     # 추첨 생방송 시간을 20:35:00으로 설정
-    target_saturday = KST.localize(target_saturday.replace(hour=20, minute=35, second=0))
+    target_saturday = target_saturday.replace(hour=20, minute=35, second=0)
+    target_saturday = KST.localize(target_saturday)
     return round_number, target_saturday
 
 def check_error_in_stderr(stderr_output: str) -> Exception:
@@ -288,7 +289,8 @@ if __name__ == "__main__":
         send_message_to_discord(error_msg_1)
 
     try:
-        result_2 = check_buy_and_report_lotto(log_dir) # 실제 로또 구매 알고리즘 작동 주의 (회차당 한도 5000원)
+        # 실제 로또 구매 알고리즘 작동 주의 (회차당 한도 5000원)
+        result_2 = check_buy_and_report_lotto(log_dir)
         send_message_to_discord(result_2)
     except (RuntimeError, ValueError, AttributeError, FileNotFoundError, KeyError) as e:
         error_msg_2 = handle_error_2(e, log_dir, today_datetime)
