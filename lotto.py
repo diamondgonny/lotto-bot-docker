@@ -20,11 +20,11 @@ DHAPI_PATH = os.path.join(VENV_PATH if USE_VENV else SYSTEM_PATH, "dhapi")
 
 
 """
-1)[필수] 동행복권 로그인: ~/.dhapi/credentials 파일 내 동행복권 ID/PW 저장
+[필수] 동행복권 로그인: ~/.dhapi/credentials 파일 내 동행복권 ID/PW 저장
 [default]
 username = "______"
 password = "______"
-2)[선택] 디스코드 알림봇: .env 파일 내 디스코드 웹훅 URL 저장 (DISCORD_BOT = True로 설정)
+[선택] 디스코드 알림봇: .env 파일 내 디스코드 웹훅 URL 저장 (DISCORD_BOT = True로 설정)
 discord_webhook_url="https://discord.com/api/webhooks/______"
 """
 
@@ -38,7 +38,7 @@ def send_message_to_discord(msg):
 
 
 """
-1. 최근 구매 내역 파일(lotto_log_OOOO.txt) 열기 -> 당첨 결과 확인 및 기록 -> 디스코드 알림
+1. 최근 로또 구매 내역(예: lotto_log_1000.txt) 열기 -> 당첨 결과 확인 및 기록
 """
 
 def get_latest_log_file(directory="log"):
@@ -85,7 +85,7 @@ def check_prize(numbers, winning_numbers, bonus_number):
     return prize_dict[matched]
 
 def process_lotto_results(log_dir):
-    """구매한 최신 회차의 당첨 여부 확인"""
+    """1번 프로세스 진행하는 함수"""
     filename = get_latest_log_file(log_dir)
     round_number = re.search(r"^lotto_log_(\d+)\.txt$", filename).group(1)
     lotto_data = get_winning_numbers(round_number)
@@ -137,7 +137,7 @@ def process_lotto_results(log_dir):
 
 
 """
-2. dhapi를 활용한 구매 -> 구매 내역 기록(lotto_log_OOOO.txt) -> 디스코드 알림
+2. dhapi를 활용한 로또 구매 -> 로또 구매 내역(예: lotto_log_1001.txt) 기록
 """
 
 def get_lotto_round_and_target_date(target_date):
@@ -191,7 +191,7 @@ def write_to_log(file_path, content, mode="a"):
         f.write(content)
 
 def report_lotto_numbers(log_path, round_number, target_saturday):
-    """구매한 로또 번호 파싱하여 (디스코드에) 보고 준비"""
+    """구매한 로또 번호 파싱하여 디스코드에 보고 준비"""
     with open(log_path, "r", encoding="utf-8") as f:
         content = f.read()
         pattern = (
@@ -224,7 +224,7 @@ def report_lotto_numbers(log_path, round_number, target_saturday):
     return "\n".join(output_lines) + "\n"
 
 def check_buy_and_report_lotto(log_dir):
-    """에치금 확인, 로또 구매 및 기록"""
+    """2번 프로세스 진행하는 함수"""
     today = datetime.now(KST).strftime("%Y-%m-%d")
     current_time = datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S")
     round_number, target_saturday = get_lotto_round_and_target_date(today)
@@ -256,13 +256,13 @@ def check_buy_and_report_lotto(log_dir):
 
 
 if __name__ == "__main__":
-    """로깅: 1)[필수] log 폴더에 저장, 2)[선택] discord에 알림"""
+    """결과는 log 폴더에 저장됨 + [선택] 디스코드에 알림"""
     log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "log")
     os.makedirs(log_dir, exist_ok=True)
     today_datetime = datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S")
 
     def handle_error_1(e, log_dir, today_datetime):
-        """에러 로깅 및 출력을 처리하는 함수1"""
+        """에러 로그를 처리하는 함수1"""
         error_message = f"{type(e).__name__}: {str(e)}"
         error_log_path = os.path.join(log_dir, "lotto_error.log")
         with open(error_log_path, "a") as f:
@@ -270,13 +270,14 @@ if __name__ == "__main__":
         return error_message
 
     def handle_error_2(e, log_dir, today_datetime):
-        """에러 로깅 및 출력을 처리하는 함수2 (dhapi으로부터 기록된 stderr에서 파싱한 것)"""
+        """에러 로그를 처리하는 함수2 (dhapi으로부터 기록된 stderr에서 파싱한 것)"""
         error_log_path = os.path.join(log_dir, "lotto_error.log")
         with open(error_log_path, "a") as f:
             f.write(f"{today_datetime} - {str(e)}\n")
         return str(e)
 
     try:
+        """1번 프로세스"""
         result_1 = process_lotto_results(log_dir)
         send_message_to_discord(result_1)
     except (RuntimeError, ValueError, AttributeError, FileNotFoundError, KeyError) as e:
@@ -287,6 +288,7 @@ if __name__ == "__main__":
         send_message_to_discord(error_msg_1)
 
     try:
+        """2번 프로세스"""
         # 실제 로또 구매 알고리즘 작동 주의 (회차당 한도 5000원)
         result_2 = check_buy_and_report_lotto(log_dir)
         send_message_to_discord(result_2)
