@@ -8,8 +8,8 @@ from dotenv import load_dotenv
 
 
 KST = pytz.timezone('Asia/Seoul')
-DISCORD_BOT = True   # True: 알림봇 사용, False: 알림봇 미사용
-USE_VENV = True      # True: 가상환경, False: 시스템 환경
+DISCORD_BOT = True   # True: 디스코드 알림봇 사용, False: 디스코드 알림봇 미사용
+USE_VENV = True      # True: 가상환경 사용, False: 시스템환경 사용
 VENV = "venv"        # (가상환경 사용시) 가상환경 폴더 이름
 
 if DISCORD_BOT:
@@ -92,7 +92,6 @@ def process_lotto_results(log_dir):
     draw_date = lotto_data["drwNoDate"]
     winning_numbers = {lotto_data[f"drwtNo{i}"] for i in range(1, 7)}
     bonus_number = lotto_data["bnusNo"]
-
     # 지난 번 구매한 로또 번호 기록 파일 열어서 처리
     log_path = os.path.join(log_dir, filename)
     with open(log_path, "r+", encoding="utf-8") as f:
@@ -179,7 +178,7 @@ def run_dhapi_command(cmd):
     """dhapi 명령어를 subprocess로 실행"""
     if USE_VENV:
         if not os.path.exists(VENV_PATH):
-            raise FileNotFoundError(f"가상환경 폴더 이름을 다시 확인하세요: {VENV}")
+            raise FileNotFoundError(f"가상환경을 사용중이신가요? 가상환경 폴더 이름을 다시 확인하세요: {VENV}")
     cmd[0] = DHAPI_PATH
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.stderr:
