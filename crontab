@@ -3,6 +3,6 @@
 # Format: minute hour day-of-month month day-of-week command
 
 # Check last round's winning numbers and purchase new tickets
-20 9 * * 0 /usr/local/bin/python /app/lotto.py >> /var/log/cron.log 2>&1
+20 9 * * 0 cd /app && /usr/local/bin/python /app/lotto.py >> /var/log/cron.log 2>&1
 
 # Empty line required at end of cron file
