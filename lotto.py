@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 KST = pytz.timezone('Asia/Seoul')
 DISCORD_BOT = True   # True: 디스코드 알림봇 사용, False: 디스코드 알림봇 미사용
-USE_VENV = True      # True: 가상환경 사용, False: 시스템환경 사용
+USE_VENV = False     # True: 가상환경 사용, False: 시스템환경 사용 (Docker: False)
 VENV = "venv"        # (가상환경 사용시) 가상환경 폴더 이름
 
 if DISCORD_BOT:

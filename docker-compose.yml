@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  lottobot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lottobot
+    restart: unless-stopped
+
+    environment:
+      - TZ=Asia/Seoul
+
+    volumes:
+      # Read-only mount for credentials
+      - ${HOME}/.secrets/lottobot/credentials:/root/.dhapi/credentials:ro
+      # Read-only mount for environment variables
+      - ${HOME}/.secrets/lottobot/.env:/app/.env:ro
+      # Persistent log directory (read-write)
+      - ${HOME}/docker/logs/lottobot:/app/log
+
+    # No ports needed - cron-based application
+
+    # Keep container running with cron daemon
+    tty: true
+    stdin_open: true
+
+    # Optional: Add labels for organization
+    labels:
+      - "app=lottobot"
+      - "type=scheduler"
+      - "description=Korean Lotto 6/45 automated checker and purchaser"
