@@ -4,17 +4,16 @@
 
 ![lotto-bot-discord](https://github.com/user-attachments/assets/4ac7a958-51c8-4d58-9cfc-e5cb6ba56323)
 
+> **⚠️ 중요**: 이 저장소는 **Docker 전용**으로 개편되었습니다. 호스트 환경(가상환경 사용)은 더 이상 지원하지 않습니다.
+
 ## 📚 목차
-- [Docker를 사용한 설치 (권장)](#docker를-사용한-설치-권장)
-- [일반 설치 (호스트 환경)](#일반-설치-호스트-환경)
+- [Docker 설치 및 실행](#docker-설치-및-실행)
 - [사용 방법](#사용-방법)
 - [주의사항](#주의사항)
 
 ---
 
-## Docker를 사용한 설치 (권장)
-
-Docker를 사용하면 환경 설정이 간편하고 관리가 용이합니다.
+## Docker 설치 및 실행
 
 ### 사전 준비
 - Docker 및 Docker Compose 설치
@@ -79,93 +78,34 @@ cat ~/docker/logs/lottobot/lotto_error.log
 docker ps | grep lottobot
 ```
 
-**자세한 Docker 사용법은 [docker/README.md](docker/README.md)를 참조하세요.**
-
----
-
-## 일반 설치 (호스트 환경)
-
-### 0. 사전 준비
-- 필수 요구사항 : Python 3.7 이상
-- 지원 운영체제 : macOS, Linux
-- 동행복권 홈페이지에서 회원가입을 먼저 진행하셔야 합니다.
-
-### 1. 저장소 복사
-```shell
-git clone https://github.com/diamondgonny/lotto-bot.git
-cd lotto-bot
-```
-
-### 2. 파이썬 가상환경 설정 (선택사항)
-```shell
-python -m venv venv
-source venv/bin/activate
-```
-
-### 3. 필요한 패키지 설치
-```shell
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-### 4. 환경 설정
-#### 4.1 동행복권 ID/PW 사용자 인증 설정
-`~/.dhapi/credentials` 파일 생성:
-```toml
-[default]
-username = "your_username"
-password = "your_password"
-```
-
-#### 4.2 Discord 웹훅 설정 (선택사항)
-프로젝트 폴더에 `.env` 파일 생성:
-```env
-discord_webhook_url="https://discord.com/api/webhooks/your_webhook_url"
-```
-Discord 알림봇을 사용하려면, 먼저 Discord에서 알림받을 서버와 채널을 정하고서 웹훅을 얻어와야 합니다. [(참고)](https://discordbot.tistory.com/35)
-
-#### 4.3 Discord 알림봇 및 가상환경 사용 여부 설정
-lotto.py 상단에서 설정을 변경할 수 있습니다:
-```python
-DISCORD_BOT = True   # Discord 알림봇 사용 여부
-USE_VENV = True      # 가상환경 사용 여부 (Docker 사용 시: False)
-VENV = "venv"        # 가상환경 폴더명
-```
+**자세한 사용법 및 트러블슈팅은 [docker/README.md](docker/README.md)를 참조하세요.**
 
 ---
 
 ## 사용 방법
 
-### 기본 실행
-```shell
-python lotto.py
-```
-
-### 자동 실행 설정
-
-#### Docker 사용 시
+### 자동 실행 (Cron)
 Docker 환경에서는 cron이 컨테이너 내부에서 자동으로 실행됩니다.
 - **기본 스케줄**: 매주 일요일 오전 9시 20분 (KST)
 - **변경 방법**: `crontab` 파일 수정 후 `docker-compose up -d --build`
 
-#### 호스트 환경 사용 시
-`crontab -e` 명령어로 실행 스케줄을 추가하세요. (예시: 매주 일요일 오전 9시에 실행, 가상환경 사용)
+### 수동 실행 (테스트)
 ```shell
-0 9 * * SUN cd {YOUR_PROJECT_PATH}/lotto-bot/ && {YOUR_PROJECT_PATH}/lotto-bot/venv/bin/python {YOUR_PROJECT_PATH}/lotto-bot/lotto.py
+# 컨테이너 내부에서 직접 실행
+docker exec lottobot /usr/local/bin/python /app/lotto.py
 ```
 
-### log 파일 구조
-프로그램을 처음 실행할 때 log 폴더와 파일이 자동으로 만들어집니다.
-- `log/lotto_error.log`: 에러 로그
-- `log/lotto_log_[회차번호].txt`: 구매 및 당첨 내역
+### 로그 파일 구조
+로그는 `~/docker/logs/lottobot/` 디렉토리에 자동으로 생성됩니다.
+- `lotto_error.log`: 에러 로그
+- `lotto_log_[회차번호].txt`: 구매 및 당첨 내역
 
 
 ## 주의사항
 
 ### 1. 프로그램 사용 관련
-1. Discord 알림을 사용하지 않을 경우 `DISCORD_BOT = False`로 설정하세요.
-2. 가상환경을 사용하지 않을 경우 `USE_VENV = False`로 설정하세요. (Docker 사용 시 자동 설정됨)
-3. 프로그램 첫 실행 시 안내:
+1. Discord 알림을 사용하지 않을 경우 `.env`에서 `discord_webhook_url`을 비워두거나 `lotto.py`의 `DISCORD_BOT = False`로 설정하세요.
+2. 프로그램 첫 실행 시 안내:
     - 이 프로그램은 '지난 회차 당첨 확인 + 이번 회차 구매' 기능을 포함합니다.
     - 첫 구매 시에는 '로또 구매 내역(lotto_log_[회차번호].txt)을 찾을 수 없습니다.' 에러 메시지가 표시됩니다.
     - 이는 이전 회차의 구매 기록이 없어서 발생하는 부분이므로 걱정하지 않으셔도 됩니다.
