@@ -11,10 +11,14 @@ services:
     environment:
       - TZ=Asia/Seoul
 
+    # Load environment variables from .env file
+    env_file:
+      - ${HOME}/.secrets/lottobot/.env
+
     volumes:
       # Read-only mount for credentials
       - ${HOME}/.secrets/lottobot/credentials:/root/.dhapi/credentials:ro
-      # Read-only mount for environment variables
+      # Read-only mount for .env file (for manual access if needed)
       - ${HOME}/.secrets/lottobot/.env:/app/.env:ro
       # Persistent log directory (read-write)
       - ${HOME}/docker/logs/lottobot:/app/log

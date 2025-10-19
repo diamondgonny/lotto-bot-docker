@@ -9,14 +9,20 @@ from dotenv import load_dotenv
 
 KST = pytz.timezone('Asia/Seoul')
 DISCORD_BOT = True   # True: 디스코드 알림봇 사용, False: 디스코드 알림봇 미사용
-USE_VENV = False     # True: 가상환경 사용, False: 시스템환경 사용 (Docker: False)
-VENV = "venv"        # (가상환경 사용시) 가상환경 폴더 이름
 
 if DISCORD_BOT:
-    load_dotenv()
-SYSTEM_PATH = "/usr/local/bin"
-VENV_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), VENV, "bin")
-DHAPI_PATH = os.path.join(VENV_PATH if USE_VENV else SYSTEM_PATH, "dhapi")
+    # Docker env_file로 로드되지만, 수동 실행 대비 절대 경로 지정
+    env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
+    load_dotenv(env_path, override=True)
+
+# Docker 전용: 시스템 Python 및 dhapi 사용
+DHAPI_PATH = "/usr/local/bin/dhapi"
+
+if not os.path.exists(DHAPI_PATH):
+    raise FileNotFoundError(
+        f"dhapi executable not found at {DHAPI_PATH}. "
+        "LottoBot now targets the Docker runtime; please run via docker-compose."
+    )
 
 
 """
@@ -33,8 +39,18 @@ def send_message_to_discord(msg):
     if not DISCORD_BOT:
         return
     discord_webhook_url = os.getenv("discord_webhook_url")
+    if not discord_webhook_url:
+        print("Discord webhook URL not configured; skipping notification.")
+        return
+    discord_webhook_url = discord_webhook_url.strip()
+    if not discord_webhook_url:
+        print("Discord webhook URL empty after parsing; skipping notification.")
+        return
     message = {"content": f"{str(msg)}"}
-    requests.post(discord_webhook_url, data=message)
+    try:
+        requests.post(discord_webhook_url, data=message, timeout=10)
+    except requests.exceptions.RequestException as exc:
+        print(f"Failed to send Discord notification: {exc}")
 
 
 """
@@ -176,9 +192,6 @@ def check_error_in_stderr(stderr_output: str) -> Exception:
 
 def run_dhapi_command(cmd):
     """dhapi 명령어를 subprocess로 실행"""
-    if USE_VENV:
-        if not os.path.exists(VENV_PATH):
-            raise FileNotFoundError(f"가상환경을 사용중이신가요? 가상환경 폴더 이름을 다시 확인하세요: {VENV}")
     cmd[0] = DHAPI_PATH
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.stderr:
