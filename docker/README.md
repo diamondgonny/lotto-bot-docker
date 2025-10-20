@@ -13,7 +13,7 @@
 ```
 /home/ubuntu/
 ├── services/
-│   └── lotto-bot/              # Git 저장소 클론
+│   └── lotto-bot-docker/              # Git 저장소 클론
 │       ├── Dockerfile
 │       ├── docker-compose.yml
 │       ├── entrypoint.sh
@@ -44,8 +44,8 @@
 ```bash
 mkdir -p ~/services
 cd ~/services
-git clone https://github.com/your-repo/lotto-bot.git
-cd lotto-bot
+git clone https://github.com/diamondgonny/lotto-bot-docker.git
+cd lotto-bot-docker
 ```
 
 ### 2. 시크릿 디렉토리 생성 및 설정
@@ -59,8 +59,8 @@ cp .secrets-template/credentials.template ~/.secrets/lottobot/credentials
 cp .secrets-template/.env.template ~/.secrets/lottobot/.env
 
 # 편집
-nano ~/.secrets/lottobot/credentials
-nano ~/.secrets/lottobot/.env
+vim ~/.secrets/lottobot/credentials
+vim ~/.secrets/lottobot/.env
 ```
 
 **credentials 파일 내용:**
@@ -85,7 +85,7 @@ mkdir -p ~/docker/volumes/lottobot
 ### 4. Docker 이미지 빌드 및 실행
 
 ```bash
-cd ~/services/lotto-bot
+cd ~/services/lotto-bot-docker
 
 # 빌드 및 실행
 docker-compose up -d
@@ -129,33 +129,6 @@ cat ~/docker/logs/lottobot/lotto_error.log
 docker exec lottobot /usr/local/bin/python /app/lotto.py
 ```
 
-## 🔧 관리 명령어
-
-### 컨테이너 재시작
-
-```bash
-docker-compose restart
-```
-
-### 컨테이너 중지
-
-```bash
-docker-compose stop
-```
-
-### 컨테이너 삭제 (데이터는 유지됨)
-
-```bash
-docker-compose down
-```
-
-### 이미지 재빌드
-
-```bash
-# 코드 변경 후 재빌드
-docker-compose up -d --build
-```
-
 ## ⏰ Cron 스케줄
 
 - **실행 시간**: 매주 일요일 오전 9시 20분 (KST)
@@ -180,17 +153,6 @@ mkdir -p ~/docker/backups/volumes/lottobot
 mv lottobot-logs-*.tar.gz ~/docker/backups/volumes/lottobot/
 ```
 
-### 설정 백업
-
-```bash
-# 시크릿 백업 (주의: 민감한 정보 포함)
-tar -czf lottobot-secrets-$(date +%Y%m%d).tar.gz ~/.secrets/lottobot/
-
-# 안전한 위치에 보관
-mv lottobot-secrets-*.tar.gz ~/docker/backups/configs/
-chmod 600 ~/docker/backups/configs/lottobot-secrets-*.tar.gz
-```
-
 ## 🔒 보안 권고사항
 
 1. **시크릿 파일 권한 설정**:
@@ -199,12 +161,7 @@ chmod 600 ~/docker/backups/configs/lottobot-secrets-*.tar.gz
    chmod 600 ~/.secrets/lottobot/.env
    ```
 
-2. **백업 파일 암호화**:
-   ```bash
-   gpg -c ~/docker/backups/configs/lottobot-secrets-*.tar.gz
-   ```
-
-3. **정기적인 비밀번호 변경** (DH Lottery 계정)
+2. **정기적인 비밀번호 변경** (DH Lottery 계정)
 
 ## 🐛 트러블슈팅
 
@@ -248,13 +205,6 @@ crontab -l
 # Cron 로그 확인
 cat /var/log/cron.log
 ```
-
-## 📞 지원
-
-문제가 지속되면 다음을 확인하세요:
-- GitHub Issues: [프로젝트 이슈 페이지]
-- DH Lottery API 상태
-- Docker 및 시스템 로그
 
 ## 📝 참고사항
 

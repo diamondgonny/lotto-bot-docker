@@ -4,7 +4,7 @@
 
 ![lotto-bot-discord](https://github.com/user-attachments/assets/4ac7a958-51c8-4d58-9cfc-e5cb6ba56323)
 
-> **⚠️ 중요**: 이 저장소는 **Docker 전용**으로 개편되었습니다. 호스트 환경(가상환경 사용)은 더 이상 지원하지 않습니다.
+> **⚠️ 중요**: 이 저장소는 **Docker 전용**으로 개편되었습니다.
 
 ## 📚 목차
 - [Docker 설치 및 실행](#docker-설치-및-실행)
@@ -21,8 +21,8 @@
 
 ### 1. 저장소 복사
 ```shell
-git clone https://github.com/diamondgonny/lotto-bot.git
-cd lotto-bot
+git clone https://github.com/diamondgonny/lotto-bot-docker.git
+cd lotto-bot-docker
 ```
 
 ### 2. 설정 파일 생성
@@ -35,8 +35,8 @@ cp .secrets-template/credentials.template ~/.secrets/lottobot/credentials
 cp .secrets-template/.env.template ~/.secrets/lottobot/.env
 
 # 설정 파일 편집
-nano ~/.secrets/lottobot/credentials
-nano ~/.secrets/lottobot/.env
+vim ~/.secrets/lottobot/credentials
+vim ~/.secrets/lottobot/.env
 ```
 
 **~/.secrets/lottobot/credentials:**
@@ -51,7 +51,7 @@ password = "your_dhlottery_password"
 discord_webhook_url="https://discord.com/api/webhooks/YOUR_WEBHOOK_URL"
 ```
 
-### 3. 로그 디렉토리 생성
+### 3. 로그 및 볼륨 디렉토리 생성
 ```shell
 mkdir -p ~/docker/logs/lottobot
 mkdir -p ~/docker/volumes/lottobot
@@ -125,5 +125,5 @@ docker exec lottobot /usr/local/bin/python /app/lotto.py
 1. dhapi의 신뢰성이 걱정되시는 경우:
     - [비공식 동행복권 API(dhapi)](https://github.com/roeniss/dhlottery-api)에서 코드를 검토하실 수 있습니다.
 2. 사용자 인증 정보의 보안이 우려되시는 경우:
-    - 개인 PC에서만 프로그램을 사용하고 ~/.dhapi/credentials 파일을 안전하게 관리하여 사용자 인증 정보가 노출되지 않도록 주의하시기 바랍니다.
+    - ~/.secrets/lottobot/credentials 파일을 안전하게 관리하여 사용자 인증 정보가 노출되지 않도록 주의하시기 바랍니다.
     - 동행복권 비밀번호를 다른 서비스와 다르게 설정하시기를 권장합니다.
