@@ -62,20 +62,8 @@ mkdir -p ~/docker/volumes/lottobot
 # 빌드 및 실행
 docker compose up -d
 
-# 로그 확인
+# 실시간 로그
 docker logs -f lottobot
-```
-
-### 5. 모니터링
-```shell
-# 로또 로그 확인
-tail -f ~/docker/logs/lottobot/lotto_log_*.txt
-
-# 에러 로그 확인
-cat ~/docker/logs/lottobot/lotto_error.log
-
-# 컨테이너 상태 확인
-docker ps | grep lottobot
 ```
 
 **자세한 사용법 및 트러블슈팅은 [docker/README.md](docker/README.md)를 참조하세요.**
