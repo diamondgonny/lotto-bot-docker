@@ -60,7 +60,7 @@ mkdir -p ~/docker/volumes/lottobot
 ### 4. Docker 실행
 ```shell
 # 빌드 및 실행
-docker-compose up -d
+docker compose up -d
 
 # 로그 확인
 docker logs -f lottobot
@@ -87,7 +87,7 @@ docker ps | grep lottobot
 ### 자동 실행 (Cron)
 Docker 환경에서는 cron이 컨테이너 내부에서 자동으로 실행됩니다.
 - **기본 스케줄**: 매주 일요일 오전 9시 20분 (KST)
-- **변경 방법**: `crontab` 파일 수정 후 `docker-compose up -d --build`
+- **변경 방법**: `crontab` 파일 수정 후 `docker compose up -d --build`
 
 ### 수동 실행 (테스트)
 ```shell

@@ -10,7 +10,7 @@
 ## Build, Test, and Development Commands
 **Note**: This project is Docker-only. Virtual environment (venv) setup is not supported.
 
-- `docker-compose up -d --build` builds and launches the scheduled bot container.
+- `docker compose up -d --build` builds and launches the scheduled bot container.
 - `docker logs -f lottobot` monitors runtime output and cron execution.
 - `docker exec lottobot /usr/local/bin/python /app/lotto.py` runs a manual test inside the container.
 - `tail -f ~/docker/logs/lottobot/lotto_log_*.txt` monitors lotto logs from the host.
