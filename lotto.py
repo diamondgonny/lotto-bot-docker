@@ -143,7 +143,7 @@ def process_lotto_results(log_dir):
         winning_str = [f"{num:02d}" for num in sorted(list(winning_numbers))]
         bonus_str = f"({bonus_number:02d})"
         output_lines.append(f"\n=== {round_number}회({draw_date} 추첨) 당첨 결과 ===")
-        output_lines.append(f"당첨 번호: [{", ".join(winning_str)}, {bonus_str}]")
+        output_lines.append(f"당첨 번호: [{', '.join(winning_str)}, {bonus_str}]")
         for result in results:
             formatted_result = ", ".join(str(x) for x in result)
             output_lines.append(f"[{formatted_result}]")
@@ -158,10 +158,11 @@ def process_lotto_results(log_dir):
 
 def get_lotto_round_and_target_date(target_date):
     """주어진 날짜의 로또 회차와 추첨일 계산해서 가져옴"""
+    # 로또 1회차 추첨일 정의
+    first_round_date = KST.localize(datetime(2002, 12, 7))
     # 입력받은 날짜를 datetime 객체로 변환 (이미 datetime인 경우는 그대로 사용)
     if isinstance(target_date, str):
         target_date = KST.localize(datetime.strptime(target_date, "%Y-%m-%d"))
-        first_round_date = KST.localize(datetime(2002, 12, 7))
         if target_date < first_round_date:
             return None
     # 해당 주의 토요일 찾기
