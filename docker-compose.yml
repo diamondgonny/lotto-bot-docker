@@ -19,7 +19,7 @@ services:
       # Read-only mount for .env file (for manual access if needed)
       - ${HOME}/.secrets/lottobot/.env:/app/.env:ro
       # Persistent log directory (read-write)
-      - ${HOME}/docker/logs/lottobot:/app/log
+      - ${HOME}/docker/lottobot/logs:/app/log
 
     # No ports needed - cron-based application
 

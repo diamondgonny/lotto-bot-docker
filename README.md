@@ -53,8 +53,8 @@ discord_webhook_url="https://discord.com/api/webhooks/YOUR_WEBHOOK_URL"
 
 ### 3. 로그 및 볼륨 디렉토리 생성
 ```shell
-mkdir -p ~/docker/logs/lottobot
-mkdir -p ~/docker/volumes/lottobot
+mkdir -p ~/docker/lottobot/logs
+mkdir -p ~/docker/lottobot/volumes
 ```
 
 ### 4. Docker 실행
@@ -84,7 +84,7 @@ docker exec lottobot /usr/local/bin/python /app/lotto.py
 ```
 
 ### 로그 파일 구조
-로그는 `~/docker/logs/lottobot/` 디렉토리에 자동으로 생성됩니다.
+로그는 `~/docker/lottobot/logs/` 디렉토리에 자동으로 생성됩니다.
 - `lotto_error.log`: 에러 로그
 - `lotto_log_[회차번호].txt`: 구매 및 당첨 내역
 

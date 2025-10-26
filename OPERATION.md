@@ -59,13 +59,13 @@ docker logs -f lottobot
 
 ```bash
 # 최근 로그 확인
-tail -f ~/docker/logs/lottobot/lotto_log_*.txt
+tail -f ~/docker/lottobot/logs/lotto_log_*.txt
 
 # 특정 회차 로그 확인
-cat ~/docker/logs/lottobot/lotto_log_1234.txt
+cat ~/docker/lottobot/logs/lotto_log_1234.txt
 
 # 에러 로그 확인
-cat ~/docker/logs/lottobot/lotto_error.log
+cat ~/docker/lottobot/logs/lotto_error.log
 ```
 
 ## 💾 백업
@@ -74,11 +74,11 @@ cat ~/docker/logs/lottobot/lotto_error.log
 
 ```bash
 # 로그 디렉토리 전체 백업
-tar -czf lottobot-logs-$(date +%Y%m%d).tar.gz ~/docker/logs/lottobot/
+tar -czf lottobot-logs-$(date +%Y%m%d).tar.gz ~/docker/lottobot/logs/
 
 # 백업 디렉토리로 이동
-mkdir -p ~/docker/backups/volumes/lottobot
-mv lottobot-logs-*.tar.gz ~/docker/backups/volumes/lottobot/
+mkdir -p ~/docker/lottobot/backups
+mv lottobot-logs-*.tar.gz ~/docker/lottobot/backups/
 ```
 
 ## 🐛 트러블슈팅
@@ -99,7 +99,7 @@ ls -la ~/.secrets/lottobot/credentials
 ### 문제: 로또 구매 실패
 
 1. DH Lottery 계정 잔액 확인 (웹사이트에서 직접 로그인)
-2. 에러 로그 확인: `cat ~/docker/logs/lottobot/lotto_error.log`
+2. 에러 로그 확인: `cat ~/docker/lottobot/logs/lotto_error.log`
 3. dhapi 인증 정보 확인: `~/.secrets/lottobot/credentials`
 
 ### 문제: Discord 알림이 오지 않음
