@@ -16,7 +16,7 @@
 ```
 /home/user/
 ├── apps/
-│   └── lotto-bot-docker/              # Git 저장소 클론
+│   └── lotto-bot-docker/       # Git 저장소 클론
 │       ├── Dockerfile
 │       ├── docker-compose.yml
 │       ├── entrypoint.sh
@@ -30,12 +30,8 @@
 │       └── .env                # Discord webhook URL
 │
 └── docker/
-    ├── volumes/
-    │   └── lottobot/
-    │       └── .dhapi/         # dhapi 설정 (자동 생성)
-    │
-    └── logs/
-        └── lottobot/           # 로그 파일 (자동 생성)
+    └── lottobot/
+        └── logs/               # lotto.py가 로그 파일 생성
             ├── lotto_log_XXXX.txt
             └── lotto_error.log
 ```
@@ -70,14 +66,16 @@ cat ~/docker/lottobot/logs/lotto_error.log
 
 ## 💾 백업
 
-### 로그 백업
+### 로그 백업 (필요시)
 
 ```bash
+# 백업 디렉토리 생성 (없을시)
+mkdir -p ~/docker/lottobot/backups
+
 # 로그 디렉토리 전체 백업
 tar -czf lottobot-logs-$(date +%Y%m%d).tar.gz ~/docker/lottobot/logs/
 
-# 백업 디렉토리로 이동
-mkdir -p ~/docker/lottobot/backups
+# 백업 파일 이동
 mv lottobot-logs-*.tar.gz ~/docker/lottobot/backups/
 ```
 

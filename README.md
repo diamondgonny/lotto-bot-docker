@@ -51,10 +51,9 @@ password = "your_dhlottery_password"
 discord_webhook_url="https://discord.com/api/webhooks/YOUR_WEBHOOK_URL"
 ```
 
-### 3. 로그 및 볼륨 디렉토리 생성
+### 3. 로그 디렉토리 생성
 ```shell
 mkdir -p ~/docker/lottobot/logs
-mkdir -p ~/docker/lottobot/volumes
 ```
 
 ### 4. Docker 실행
