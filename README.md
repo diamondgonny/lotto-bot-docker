@@ -66,7 +66,7 @@ docker compose up -d
 docker logs -f lottobot
 ```
 
-**자세한 사용법 및 트러블슈팅은 [docker/README.md](docker/README.md)를 참조하세요.**
+**자세한 사용법 및 트러블슈팅은 [OPERATION.md](OPERATION.md)를 참조하세요.**
 
 ---
 
