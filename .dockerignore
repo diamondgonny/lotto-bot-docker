@@ -26,6 +26,10 @@ log/
 
 # Environment files
 .env
+.env.*
+credentials
+*.secret
+.secrets/
 
 # Documentation
 *.md

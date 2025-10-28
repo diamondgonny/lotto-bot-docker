@@ -26,11 +26,10 @@ if not os.path.exists(DHAPI_PATH):
 
 
 """
-[필수] 동행복권 로그인: ~/.dhapi/credentials 파일 내 동행복권 ID/PW 저장
-[default]
-username = "______"
-password = "______"
-[선택] 디스코드 알림봇: .env 파일 내 디스코드 웹훅 URL 저장 (DISCORD_BOT = True로 설정)
+[필수] 동행복권 로그인: credentials 파일에 환경변수 형식으로 저장
+DHLOTTERY_USERNAME="______"
+DHLOTTERY_PASSWORD="______"
+[선택] 디스코드 알림봇: .env 파일에 웹훅 URL 저장 (DISCORD_BOT = True로 설정)
 discord_webhook_url="https://discord.com/api/webhooks/______"
 """
 

@@ -8,10 +8,26 @@ echo "Timezone: ${TZ}"
 echo "Current time: $(date '+%Y-%m-%d %H:%M:%S %Z')"
 echo ""
 
-# Check if credentials file exists
-if [ ! -f /root/.dhapi/credentials ]; then
-    echo "⚠️  WARNING: /root/.dhapi/credentials not found!"
-    echo "Please mount credentials file to /root/.dhapi/credentials"
+# Generate credentials file from environment variables
+if [ -n "$DHLOTTERY_USERNAME" ] && [ -n "$DHLOTTERY_PASSWORD" ]; then
+    echo "🔑 Configuring dhapi credentials..."
+    mkdir -p /root/.dhapi
+    cat > /root/.dhapi/credentials <<EOF
+[default]
+username = "$DHLOTTERY_USERNAME"
+password = "$DHLOTTERY_PASSWORD"
+EOF
+    chmod 600 /root/.dhapi/credentials
+
+    # Clear from environment
+    unset DHLOTTERY_USERNAME
+    unset DHLOTTERY_PASSWORD
+
+    echo "✅ Credentials configured successfully"
+elif [ ! -f /root/.dhapi/credentials ]; then
+    echo "⚠️  WARNING: No credentials configured!"
+    echo "Please set DHLOTTERY_USERNAME and DHLOTTERY_PASSWORD in credentials file"
+    exit 1
 fi
 
 # Check if .env file exists
