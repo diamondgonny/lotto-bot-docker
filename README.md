@@ -37,17 +37,23 @@ cp .secrets-template/.env.template ~/.secrets/lottobot/.env
 # 설정 파일 편집
 vim ~/.secrets/lottobot/credentials
 vim ~/.secrets/lottobot/.env
+
+# 파일 권한 설정
+chmod 700 ~/.secrets/lottobot
+chmod 600 ~/.secrets/lottobot/credentials
+chmod 600 ~/.secrets/lottobot/.env
 ```
 
 **~/.secrets/lottobot/credentials:**
-```toml
-[default]
-username = "your_dhlottery_id"
-password = "your_dhlottery_password"
+```env
+# DH Lottery Credentials
+DHLOTTERY_USERNAME="your_dhlottery_id"
+DHLOTTERY_PASSWORD="your_dhlottery_password"
 ```
 
 **~/.secrets/lottobot/.env:**
 ```env
+# Discord Webhook
 discord_webhook_url="https://discord.com/api/webhooks/YOUR_WEBHOOK_URL"
 ```
 
@@ -109,8 +115,9 @@ docker exec lottobot /usr/local/bin/python /app/lotto.py
 - 동행복권 사이트는 JSESSIONID로 유저를 인증합니다.
 - 이 프로그램이 사용하는 dhapi는 requests를 이용해 로그인한 후 발급받은 JSESSIONID를 복권 구매에 활용합니다.
 #### 보안 제안사항
-1. dhapi의 신뢰성이 걱정되시는 경우:
+- dhapi의 신뢰성이 우려되시는 경우:
     - [비공식 동행복권 API(dhapi)](https://github.com/roeniss/dhlottery-api)에서 코드를 검토하실 수 있습니다.
-2. 사용자 인증 정보의 보안이 우려되시는 경우:
-    - ~/.secrets/lottobot/credentials 파일을 안전하게 관리하여 사용자 인증 정보가 노출되지 않도록 주의하시기 바랍니다.
-    - 동행복권 비밀번호를 다른 서비스와 다르게 설정하시기를 권장합니다.
+#### 보안 기능
+- 외부 접근으로부터 격리 (인바운드 포트 노출 없음)
+- Docker 이미지에 인증 정보가 포함되지 않음
+- 로그에 인증 정보가 노출되지 않음

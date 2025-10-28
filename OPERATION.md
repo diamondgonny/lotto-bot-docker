@@ -98,7 +98,12 @@ ls -la ~/.secrets/lottobot/credentials
 
 1. DH Lottery 계정 잔액 확인 (웹사이트에서 직접 로그인)
 2. 에러 로그 확인: `cat ~/docker/lottobot/logs/lotto_error.log`
-3. dhapi 인증 정보 확인: `~/.secrets/lottobot/credentials`
+3. dhapi 인증 정보 확인:
+   ```bash
+   # 컨테이너 내부 TOML 파일 확인 (entrypoint.sh가 생성)
+   docker exec lottobot cat /root/.dhapi/credentials
+   # [default] 섹션에 username과 password가 올바르게 생성되었는지 확인
+   ```
 
 ### 문제: Discord 알림이 오지 않음
 
