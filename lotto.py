@@ -30,14 +30,14 @@ if not os.path.exists(DHAPI_PATH):
 DHLOTTERY_USERNAME="______"
 DHLOTTERY_PASSWORD="______"
 [선택] 디스코드 알림봇: .env 파일에 웹훅 URL 저장 (DISCORD_BOT = True로 설정)
-discord_webhook_url="https://discord.com/api/webhooks/______"
+DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/______"
 """
 
 def send_message_to_discord(msg):
     """디스코드 메세지 전송"""
     if not DISCORD_BOT:
         return
-    discord_webhook_url = os.getenv("discord_webhook_url")
+    discord_webhook_url = os.getenv("DISCORD_WEBHOOK_URL")
     if not discord_webhook_url:
         print("Discord webhook URL not configured; skipping notification.")
         return
