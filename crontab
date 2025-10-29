@@ -1,8 +1,4 @@
 # LottoBot Cron Job
-# Runs every Sunday at 09:20 AM KST
-# Format: minute hour day-of-month month day-of-week command
-
 # Check last round's winning numbers and purchase new tickets
-20 9 * * 0 [ -f /etc/cron.env ] && . /etc/cron.env; cd /app && /usr/local/bin/python /app/lotto.py >> /var/log/cron.log 2>&1
 
-# Empty line required at end of cron file
+20 9 * * 0 [ -f /etc/cron.env ] && . /etc/cron.env; cd /app && /usr/local/bin/python /app/lotto.py >> /var/log/cron.log 2>&1

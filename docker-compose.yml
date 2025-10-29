@@ -9,13 +9,9 @@ services:
     environment:
       - TZ=Asia/Seoul
 
-    # Load environment variables from .env file
     env_file:
       - ${HOME}/.secrets/lottobot/.env
       - ${HOME}/.secrets/lottobot/credentials
 
     volumes:
-      # Persistent log directory (read-write)
       - ${HOME}/docker/lottobot/logs:/app/log
-
-    # No ports needed - cron-based application
