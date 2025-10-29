@@ -19,13 +19,3 @@ services:
       - ${HOME}/docker/lottobot/logs:/app/log
 
     # No ports needed - cron-based application
-
-    # Keep container running with cron daemon
-    tty: true
-    stdin_open: true
-
-    # Optional: Add labels for organization
-    labels:
-      - "app=lottobot"
-      - "type=scheduler"
-      - "description=Korean Lotto 6/45 automated checker and purchaser"
