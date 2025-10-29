@@ -29,7 +29,7 @@ fi
 if [ -n "$DISCORD_WEBHOOK_URL" ]; then
     echo "🔔 Configuring Discord webhook for cron..."
     cat <<EOF > /etc/cron.env
-DISCORD_WEBHOOK_URL="${DISCORD_WEBHOOK_URL//\"/\\\"}"
+export DISCORD_WEBHOOK_URL="${DISCORD_WEBHOOK_URL//\"/\\\"}"
 EOF
     chmod 600 /etc/cron.env
     echo "✅ Discord webhook configured successfully"
