@@ -18,11 +18,6 @@ username = "$DHLOTTERY_USERNAME"
 password = "$DHLOTTERY_PASSWORD"
 EOF
     chmod 600 /root/.dhapi/credentials
-
-    # Clear from environment
-    unset DHLOTTERY_USERNAME
-    unset DHLOTTERY_PASSWORD
-
     echo "✅ Credentials configured successfully"
 elif [ ! -f /root/.dhapi/credentials ]; then
     echo "⚠️  WARNING: No credentials configured!"
@@ -30,10 +25,18 @@ elif [ ! -f /root/.dhapi/credentials ]; then
     exit 1
 fi
 
-# Check if .env file exists
-if [ ! -f /app/.env ]; then
-    echo "⚠️  WARNING: /app/.env not found!"
-    echo "Discord notifications will be disabled."
+# Create environment file for cron
+if [ -n "$DISCORD_WEBHOOK_URL" ]; then
+    echo "🔔 Configuring Discord webhook for cron..."
+    echo "DISCORD_WEBHOOK_URL=$DISCORD_WEBHOOK_URL" > /etc/cron.env
+    chmod 600 /etc/cron.env
+    echo "✅ Discord webhook configured successfully"
+else
+    if [ -f /etc/cron.env ]; then
+        echo "ℹ️  Discord webhook not provided; clearing cron environment..."
+        rm -f /etc/cron.env
+        echo "✅ Discord webhook configuration cleared"
+    fi
 fi
 
 echo ""

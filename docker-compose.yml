@@ -15,8 +15,6 @@ services:
       - ${HOME}/.secrets/lottobot/credentials
 
     volumes:
-      # Read-only mount for .env file (for manual access if needed)
-      - ${HOME}/.secrets/lottobot/.env:/app/.env:ro
       # Persistent log directory (read-write)
       - ${HOME}/docker/lottobot/logs:/app/log
 

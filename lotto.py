@@ -4,19 +4,12 @@ import re
 import requests
 import subprocess
 from datetime import datetime, timedelta
-from dotenv import load_dotenv
 
 
-KST = pytz.timezone('Asia/Seoul')
-DISCORD_BOT = True   # True: 디스코드 알림봇 사용, False: 디스코드 알림봇 미사용
-
-if DISCORD_BOT:
-    # Docker env_file로 로드되지만, 수동 실행 대비 절대 경로 지정
-    env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
-    load_dotenv(env_path, override=True)
-
-# Docker 전용: 시스템 Python 및 dhapi 사용
+# DISCORD_WEBHOOK_URL 환경변수가 설정되어 있으면 Discord 알림봇 사용
+DISCORD_BOT = bool(os.getenv("DISCORD_WEBHOOK_URL", "").strip())
 DHAPI_PATH = "/usr/local/bin/dhapi"
+KST = pytz.timezone('Asia/Seoul')
 
 if not os.path.exists(DHAPI_PATH):
     raise FileNotFoundError(
@@ -29,7 +22,7 @@ if not os.path.exists(DHAPI_PATH):
 [필수] 동행복권 로그인: credentials 파일에 환경변수 형식으로 저장
 DHLOTTERY_USERNAME="______"
 DHLOTTERY_PASSWORD="______"
-[선택] 디스코드 알림봇: .env 파일에 웹훅 URL 저장 (DISCORD_BOT = True로 설정)
+[선택] 디스코드 알림봇: 환경변수로 웹훅 URL 설정 (설정 시 자동 활성화)
 DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/______"
 """
 
