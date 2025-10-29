@@ -1,4 +1,4 @@
 # LottoBot Cron Job
 # Check last round's winning numbers and purchase new tickets
 
-20 9 * * 0 [ -f /etc/cron.env ] && . /etc/cron.env; cd /app && /usr/local/bin/python /app/lotto.py >> /var/log/cron.log 2>&1
+20 9 * * 0 [ -f /etc/lotto-cron ] && . /etc/lotto-cron; cd /app && /usr/local/bin/python /app/lotto.py >> /var/log/cron.log 2>&1

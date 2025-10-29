@@ -112,7 +112,7 @@ ls -la ~/.secrets/lottobot/credentials
 2. Webhook URL 유효성 확인
 3. 컨테이너 내부에서 cron 환경 파일 확인:
    ```bash
-   docker exec lottobot [ -f /etc/cron.env ] && cat /etc/cron.env || echo "cron.env not found"
+   docker exec lottobot [ -f /etc/lotto-cron ] && cat /etc/lotto-cron || echo "lotto-cron not found"
    ```
 4. 컨테이너 재시작
 

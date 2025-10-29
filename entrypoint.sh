@@ -28,15 +28,15 @@ fi
 # Create environment file for cron
 if [ -n "$DISCORD_WEBHOOK_URL" ]; then
     echo "🔔 Configuring Discord webhook for cron..."
-    cat <<EOF > /etc/cron.env
+    cat <<EOF > /etc/lotto-cron
 export DISCORD_WEBHOOK_URL="${DISCORD_WEBHOOK_URL//\"/\\\"}"
 EOF
-    chmod 600 /etc/cron.env
+    chmod 600 /etc/lotto-cron
     echo "✅ Discord webhook configured successfully"
 else
-    if [ -f /etc/cron.env ]; then
+    if [ -f /etc/lotto-cron ]; then
         echo "ℹ️  Discord webhook not provided; clearing cron environment..."
-        rm -f /etc/cron.env
+        rm -f /etc/lotto-cron
         echo "✅ Discord webhook configuration cleared"
     fi
 fi
