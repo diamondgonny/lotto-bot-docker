@@ -97,7 +97,7 @@ docker exec lottobot /usr/local/bin/python /app/lotto.py
 ## 주의사항
 
 ### 1. 프로그램 사용 관련
-1. Discord 알림을 사용하지 않을 경우 `.env`에서 `DISCORD_WEBHOOK_URL`을 비워두거나 `lotto.py`의 `DISCORD_BOT = False`로 설정하세요.
+1. Discord 알림을 사용하지 않을 경우 `.env`에서 `DISCORD_WEBHOOK_URL` 값을 비워두거나 제거하면 됩니다.
 2. 프로그램 첫 실행 시 안내:
     - 이 프로그램은 '지난 회차 당첨 확인 + 이번 회차 구매' 기능을 포함합니다.
     - 첫 구매 시에는 '로또 구매 내역(lotto_log_[회차번호].txt)을 찾을 수 없습니다.' 에러 메시지가 표시됩니다.

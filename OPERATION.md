@@ -103,13 +103,18 @@ ls -la ~/.secrets/lottobot/credentials
    # 컨테이너 내부 TOML 파일 확인 (entrypoint.sh가 생성)
    docker exec lottobot cat /root/.dhapi/credentials
    # [default] 섹션에 username과 password가 올바르게 생성되었는지 확인
+   # credentials 파일의 환경변수가 올바르게 로드되었는지 확인합니다.
    ```
 
 ### 문제: Discord 알림이 오지 않음
 
 1. `.env` 파일 확인: `cat ~/.secrets/lottobot/.env`
 2. Webhook URL 유효성 확인
-3. 컨테이너 재시작
+3. 컨테이너 내부에서 cron 환경 파일 확인:
+   ```bash
+   docker exec lottobot [ -f /etc/cron.env ] && cat /etc/cron.env || echo "cron.env not found"
+   ```
+4. 컨테이너 재시작
 
 ### 문제: Cron이 실행되지 않음
 
