@@ -18,14 +18,6 @@ if not os.path.exists(DHAPI_PATH):
     )
 
 
-"""
-[필수] 동행복권 로그인: credentials 파일에 환경변수 형식으로 저장
-DHLOTTERY_USERNAME="______"
-DHLOTTERY_PASSWORD="______"
-[선택] 디스코드 알림봇: 환경변수로 웹훅 URL 설정 (설정 시 자동 활성화)
-DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/______"
-"""
-
 def send_message_to_discord(msg):
     """디스코드 메세지 전송"""
     if not DISCORD_BOT:
