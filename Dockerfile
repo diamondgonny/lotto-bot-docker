@@ -21,13 +21,11 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 # Copy application files
 COPY lotto.py .
-COPY crontab /app/crontab
 COPY entrypoint.sh /entrypoint.sh
 
-# Set proper permissions and install crontab
+# Set proper permissions
 RUN chmod +x /entrypoint.sh && \
-    touch /var/log/cron.log && \
-    crontab /app/crontab
+    touch /var/log/cron.log
 
 # Create log directory
 RUN mkdir -p /app/log
