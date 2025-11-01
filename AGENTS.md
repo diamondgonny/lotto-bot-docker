@@ -13,7 +13,7 @@
 - `docker compose up -d --build` builds and launches the scheduled bot container.
 - `docker logs -f lottobot` monitors runtime output and cron execution.
 - `docker exec lottobot /usr/local/bin/python /app/lotto.py` runs a manual test inside the container.
-- `tail -f ~/docker/lottobot/logs/lotto_log_*.txt` monitors lotto logs from the host.
+- `tail -f log/lotto_log_*.txt` monitors lotto logs from the host.
 - Set empty `DISCORD_BOT` in `lotto.py` for testing without notifications.
 
 ## Coding Style & Naming Conventions
@@ -26,4 +26,4 @@ Automated tests are not yet in place; validate changes by running `python lotto.
 Recent history uses conventional prefixes (`docs:`, `fix:`). Keep messages imperative and scoped to one change (`feat: add lotto retry strategy`). PRs should detail the scenario, configuration touched (`credentials`, `cron`), manual verification steps, and attach screenshots for Discord-facing changes. Link related issues or discussions when available.
 
 ## Security & Configuration Tips
-**Docker Setup**: Secrets live in `~/.secrets/lottobot/credentials` (environment variable format: `DHLOTTERY_USERNAME`, `DHLOTTERY_PASSWORD`) and `~/.secrets/lottobot/.env` (Discord webhook), loaded via `docker-compose.yml` env_file directive at container startup. Credentials are converted to TOML format by `entrypoint.sh`, and the `DISCORD_WEBHOOK_URL` environment variable is written to `/etc/lotto-cron` for cron job access. Reference `credentials.example` and `.env.example` for scaffolding and set file permissions to 600 for files and 700 for the directory. When extending HTTP calls, reuse the existing session handling in `dhapi` and mention any new environment variables in both templates and docs. Audit logs before sharing them externally—they may contain round numbers or purchase metadata.
+**Docker Setup**: Secrets live in project root as `credentials` (environment variable format: `DHLOTTERY_USERNAME`, `DHLOTTERY_PASSWORD`) and `.env` (Discord webhook), loaded via `docker-compose.yml` env_file directive at container startup. Both files are excluded from version control via `.gitignore`. Credentials are converted to TOML format by `entrypoint.sh`, and the `DISCORD_WEBHOOK_URL` environment variable is written to `/etc/lotto-cron` for cron job access. Reference `credentials.example` and `.env.example` for scaffolding and set file permissions to 600 if needed. When extending HTTP calls, reuse the existing session handling in `dhapi` and mention any new environment variables in both templates and docs. Audit logs before sharing them externally—they may contain round numbers or purchase metadata.

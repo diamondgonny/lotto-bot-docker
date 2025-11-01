@@ -27,42 +27,32 @@ cd lotto-bot-docker
 
 ### 2. 설정 파일 생성
 ```shell
-# 시크릿 디렉토리 생성
-mkdir -p ~/.secrets/lottobot
-
 # 템플릿 복사
-cp credentials.example ~/.secrets/lottobot/credentials
-cp .env.example ~/.secrets/lottobot/.env
+cp credentials.example credentials
+cp .env.example .env
 
 # 설정 파일 편집
-vim ~/.secrets/lottobot/credentials
-vim ~/.secrets/lottobot/.env
+vim credentials
+vim .env
 
-# 파일 권한 설정
-chmod 700 ~/.secrets/lottobot
-chmod 600 ~/.secrets/lottobot/credentials
-chmod 600 ~/.secrets/lottobot/.env
+# 파일 권한 설정 (선택사항)
+chmod 600 credentials .env
 ```
 
-**~/.secrets/lottobot/credentials:**
+**credentials:**
 ```env
 # DH Lottery Credentials
 DHLOTTERY_USERNAME="your_dhlottery_id"
 DHLOTTERY_PASSWORD="your_dhlottery_password"
 ```
 
-**~/.secrets/lottobot/.env:**
+**.env:**
 ```env
 # Discord Webhook
 DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/YOUR_WEBHOOK_URL"
 ```
 
-### 3. 로그 디렉토리 생성
-```shell
-mkdir -p ~/docker/lottobot/logs
-```
-
-### 4. Docker 실행
+### 3. Docker 실행
 ```shell
 # 빌드 및 실행
 docker compose up -d
@@ -89,7 +79,7 @@ docker exec lottobot /usr/local/bin/python /app/lotto.py
 ```
 
 ### 로그 파일 구조
-로그는 `~/docker/lottobot/logs/` 디렉토리에 자동으로 생성됩니다.
+로그는 프로젝트 루트의 `log/` 디렉토리에 자동으로 생성됩니다.
 - `lotto_error.log`: 에러 로그
 - `lotto_log_[회차번호].txt`: 구매 및 당첨 내역
 

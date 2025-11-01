@@ -15,25 +15,19 @@
 
 ```
 /home/user/
-├── apps/
-│   └── lotto-bot-docker/       # Git 저장소 클론
-│       ├── Dockerfile
-│       ├── docker-compose.yml
-│       ├── entrypoint.sh
-│       ├── crontab
-│       ├── lotto.py
-│       └── ...
-│
-├── .secrets/
-│   └── lottobot/
-│       ├── credentials         # DH Lottery 로그인 정보
-│       └── .env                # Discord webhook URL
-│
-└── docker/
-    └── lottobot/
-        └── logs/               # lotto.py가 로그 파일 생성
-            ├── lotto_log_XXXX.txt
-            └── lotto_error.log
+└── apps/
+    └── lotto-bot-docker/       # Git 저장소 클론
+        ├── Dockerfile
+        ├── docker-compose.yml
+        ├── entrypoint.sh
+        ├── crontab
+        ├── lotto.py
+        ├── credentials         # DH Lottery 로그인 정보
+        ├── .env                # Discord webhook URL
+        ├── log/                # lotto.py가 로그 파일 생성
+        │   ├── lotto_log_XXXX.txt
+        │   └── lotto_error.log
+        └── ...
 ```
 
 ## 📊 모니터링
@@ -55,13 +49,13 @@ docker logs -f lottobot
 
 ```bash
 # 최근 로그 확인
-tail -f ~/docker/lottobot/logs/lotto_log_*.txt
+tail -f log/lotto_log_*.txt
 
 # 특정 회차 로그 확인
-cat ~/docker/lottobot/logs/lotto_log_1234.txt
+cat log/lotto_log_1234.txt
 
 # 에러 로그 확인
-cat ~/docker/lottobot/logs/lotto_error.log
+cat log/lotto_error.log
 ```
 
 ## 💾 백업
@@ -70,13 +64,13 @@ cat ~/docker/lottobot/logs/lotto_error.log
 
 ```bash
 # 백업 디렉토리 생성 (없을시)
-mkdir -p ~/docker/lottobot/backups
+mkdir -p backups
 
 # 로그 디렉토리 전체 백업
-tar -czf lottobot-logs-$(date +%Y%m%d).tar.gz ~/docker/lottobot/logs/
+tar -czf lottobot-logs-$(date +%Y%m%d).tar.gz log/
 
 # 백업 파일 이동
-mv lottobot-logs-*.tar.gz ~/docker/lottobot/backups/
+mv lottobot-logs-*.tar.gz backups/
 ```
 
 ## 🐛 트러블슈팅
@@ -88,16 +82,16 @@ mv lottobot-logs-*.tar.gz ~/docker/lottobot/backups/
 docker logs lottobot
 
 # 설정 파일 존재 확인
-ls -la ~/.secrets/lottobot/
+ls -la credentials .env
 
 # 권한 확인
-ls -la ~/.secrets/lottobot/credentials
+ls -la credentials
 ```
 
 ### 문제: 로또 구매 실패
 
 1. DH Lottery 계정 잔액 확인 (웹사이트에서 직접 로그인)
-2. 에러 로그 확인: `cat ~/docker/lottobot/logs/lotto_error.log`
+2. 에러 로그 확인: `cat log/lotto_error.log`
 3. dhapi 인증 정보 확인:
    ```bash
    # 컨테이너 내부 TOML 파일 확인 (entrypoint.sh가 생성)
@@ -108,7 +102,7 @@ ls -la ~/.secrets/lottobot/credentials
 
 ### 문제: Discord 알림이 오지 않음
 
-1. `.env` 파일 확인: `cat ~/.secrets/lottobot/.env`
+1. `.env` 파일 확인: `cat .env`
 2. Webhook URL 유효성 확인
 3. 컨테이너 내부에서 cron 환경 파일 확인:
    ```bash

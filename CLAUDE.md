@@ -33,18 +33,18 @@ The application follows a sequential two-phase execution pattern:
 ### Configuration Flow
 
 ```
-Host: ~/.secrets/lottobot/credentials → Docker env vars (DHLOTTERY_USERNAME, DHLOTTERY_PASSWORD)
-                                      ↓
-Host: ~/.secrets/lottobot/.env → Docker env var (DISCORD_WEBHOOK_URL)
-                                      ↓
-                        entrypoint.sh (container startup)
-                                      ↓
-              /root/.dhapi/credentials (TOML format for dhapi)
-              /etc/lotto-cron (env exports for cron)
-                                      ↓
-                        cron job sources /etc/lotto-cron
-                                      ↓
-                              lotto.py execution
+Project root: ./credentials → Docker env vars (DHLOTTERY_USERNAME, DHLOTTERY_PASSWORD)
+                           ↓
+Project root: ./.env → Docker env var (DISCORD_WEBHOOK_URL)
+                           ↓
+             entrypoint.sh (container startup)
+                           ↓
+   /root/.dhapi/credentials (TOML format for dhapi)
+   /etc/lotto-cron (env exports for cron)
+                           ↓
+             cron job sources /etc/lotto-cron
+                           ↓
+                   lotto.py execution
 ```
 
 ### Log File Structure
@@ -90,8 +90,8 @@ docker exec lottobot cat /var/log/cron.log
 ### Local Development & Testing
 ```bash
 # Monitor application logs from host
-tail -f ~/docker/lottobot/logs/lotto_log_*.txt
-tail -f ~/docker/lottobot/logs/lotto_error.log
+tail -f log/lotto_log_*.txt
+tail -f log/lotto_error.log
 
 # Test without Discord notifications
 # Set DISCORD_BOT = False in lotto.py or unset DISCORD_WEBHOOK_URL in .env
@@ -128,7 +128,7 @@ docker compose up -d --build
 ### Security Model
 - No inbound ports exposed (container operates in isolation)
 - Credentials never embedded in Docker image or logs
-- Credentials stored on host at `~/.secrets/lottobot/` with 600/700 permissions
+- Credentials stored in project root (`credentials`, `.env`) excluded via `.gitignore`
 - Environment variables converted to TOML format at runtime by entrypoint.sh
 - JSESSIONID-based authentication via dhapi (no permanent token storage)
 
@@ -161,7 +161,7 @@ Edit `dhapi buy-lotto645` command arguments in `check_buy_and_report_lotto()`. E
 Update regex pattern in both `process_lotto_results()` and `report_lotto_numbers()` to maintain consistency between Phase 1 and Phase 2 parsing.
 
 ### Environment Variable Changes
-1. Add to `.secrets-template/` template files
+1. Add to template files (`credentials.example`, `.env.example`)
 2. Update `entrypoint.sh` to handle new variables
 3. Document in README.md setup section
 4. If needed by cron, export to `/etc/lotto-cron`

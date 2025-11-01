@@ -10,8 +10,8 @@ services:
       - TZ=Asia/Seoul
 
     env_file:
-      - ${HOME}/.secrets/lottobot/.env
-      - ${HOME}/.secrets/lottobot/credentials
+      - ./.env
+      - ./credentials
 
     volumes:
-      - ${HOME}/docker/lottobot/logs:/app/log
+      - ./log:/app/log
