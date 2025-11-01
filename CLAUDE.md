@@ -32,7 +32,7 @@ The application follows a sequential two-phase execution pattern:
 ### Configuration Flow
 
 ```
-Project root: ./credentials → Docker env vars (DHLOTTERY_USERNAME, DHLOTTERY_PASSWORD)
+Project root: ./.credentials → Docker env vars (DHLOTTERY_USERNAME, DHLOTTERY_PASSWORD)
                            ↓
 Project root: ./.env → Docker env vars (DISCORD_WEBHOOK_URL, CRON_SCHEDULE)
                            ↓
@@ -131,7 +131,7 @@ docker compose up -d --build
 ### Security Model
 - No inbound ports exposed (container operates in isolation)
 - Credentials never embedded in Docker image or logs
-- Credentials stored in project root (`credentials`, `.env`) excluded via `.gitignore`
+- Credentials stored in project root (`.credentials`, `.env`) excluded via `.gitignore`
 - Environment variables converted to TOML format at runtime by entrypoint.sh
 - JSESSIONID-based authentication via dhapi (no permanent token storage)
 
@@ -148,7 +148,7 @@ docker compose up -d --build
 - **`Dockerfile`**: Python 3.11-slim base, cron installation, timezone setup
 - **`docker-compose.yml`**: Volume mounts for logs, secret file loading
 - **`requirements.txt`**: Python dependencies (dhapi only)
-- **`credentials.example`**: Template file for DH Lottery credentials
+- **`.credentials.example`**: Template file for DH Lottery credentials
 - **`.env.example`**: Template file for environment variables (Discord webhook, cron schedule)
 
 ## Extending the Application
@@ -163,7 +163,7 @@ Edit `dhapi buy-lotto645` command arguments in `check_buy_and_report_lotto()`. E
 Update regex pattern in both `process_lotto_results()` and `report_lotto_numbers()` to maintain consistency between Phase 1 and Phase 2 parsing.
 
 ### Environment Variable Changes
-1. Add to template files (`credentials.example`, `.env.example`)
+1. Add to template files (`.credentials.example`, `.env.example`)
 2. Update `entrypoint.sh` to handle new variables
 3. Document in README.md setup section
 4. If needed by cron job, add to `/tmp/lotto.crontab` generation in `entrypoint.sh`

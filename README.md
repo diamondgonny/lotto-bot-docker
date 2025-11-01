@@ -32,8 +32,8 @@ mkdir lotto-bot && cd lotto-bot
 
 ### 2. 설정 파일 생성
 ```shell
-# credentials 파일 생성
-cat > credentials << 'EOF'
+# .credentials 파일 생성
+cat > .credentials << 'EOF'
 # DH Lottery Credentials
 DHLOTTERY_USERNAME="your_dhlottery_id"
 DHLOTTERY_PASSWORD="your_dhlottery_password"
@@ -49,10 +49,10 @@ CRON_SCHEDULE="20 9 * * 0"
 EOF
 
 # 파일 권한 설정
-chmod 600 credentials .env
+chmod 600 .credentials .env
 ```
 
-**credentials**와 **.env** 파일을 편집하여 실제 정보를 입력하세요.
+**.credentials**와 **.env** 파일을 편집하여 실제 정보를 입력하세요.
 
 **⚠️ 중요**: 해당 파일들은 안전하게 관리해야 함을 유념하시기 바랍니다.
 
@@ -71,7 +71,7 @@ services:
 
     env_file:
       - ./.env
-      - ./credentials
+      - ./.credentials
 
     volumes:
       - ./log:/app/log
@@ -106,18 +106,18 @@ cd lotto-bot-docker
 ### 2. 설정 파일 생성
 ```shell
 # 템플릿 복사
-cp credentials.example credentials
+cp .credentials.example .credentials
 cp .env.example .env
 
 # 설정 파일 편집
-vim credentials
+vim .credentials
 vim .env
 
 # 파일 권한 설정
-chmod 600 credentials .env
+chmod 600 .credentials .env
 ```
 
-**credentials:**
+**.credentials:**
 ```env
 # DH Lottery Credentials
 DHLOTTERY_USERNAME="your_dhlottery_id"

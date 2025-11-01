@@ -62,10 +62,10 @@ mv lotto-bot-logs-*.tar.gz backups/
 docker logs lotto-bot
 
 # 설정 파일 존재 확인
-ls -la credentials .env
+ls -la .credentials .env
 
 # 권한 확인
-ls -la credentials
+ls -la .credentials
 ```
 
 ### 문제: 로또 구매 실패
@@ -77,7 +77,7 @@ ls -la credentials
    # 컨테이너 내부 TOML 파일 확인 (entrypoint.sh가 생성)
    docker exec lotto-bot cat /root/.dhapi/credentials
    # [default] 섹션에 username과 password가 올바르게 생성되었는지 확인
-   # credentials 파일의 환경변수가 올바르게 로드되었는지 확인합니다.
+   # .credentials 파일의 환경변수가 올바르게 로드되었는지 확인합니다.
    ```
 
 ### 문제: Discord 알림이 오지 않음
