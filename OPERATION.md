@@ -6,29 +6,9 @@
 
 ## 📋 목차
 
-- [서버 디렉토리 구조 예시](#서버-디렉토리-구조-예시)
 - [모니터링](#모니터링)
 - [백업](#백업)
 - [트러블슈팅](#트러블슈팅)
-
-## 🏗️ 서버 디렉토리 구조 예시
-
-```
-/home/user/
-└── apps/
-    └── lotto-bot-docker/       # Git 저장소 클론
-        ├── Dockerfile
-        ├── docker-compose.yml
-        ├── entrypoint.sh
-        ├── crontab
-        ├── lotto.py
-        ├── credentials         # DH Lottery 로그인 정보
-        ├── .env                # Discord webhook URL
-        ├── log/                # lotto.py가 로그 파일 생성
-        │   ├── lotto_log_XXXX.txt
-        │   └── lotto_error.log
-        └── ...
-```
 
 ## 📊 모니터링
 

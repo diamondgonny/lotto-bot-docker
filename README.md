@@ -2,13 +2,12 @@
 
 [![Docker Hub](https://img.shields.io/docker/v/diamondgonny/lotto-bot?label=Docker%20Hub&logo=docker)](https://hub.docker.com/r/diamondgonny/lotto-bot)
 [![Docker Image Size](https://img.shields.io/docker/image-size/diamondgonny/lotto-bot/latest)](https://hub.docker.com/r/diamondgonny/lotto-bot)
-[![Docker Pulls](https://img.shields.io/docker/pulls/diamondgonny/lotto-bot)](https://hub.docker.com/r/diamondgonny/lotto-bot)
 
 [비공식 동행복권 API(dhapi)](https://github.com/roeniss/dhlottery-api)를 활용한 로또 당첨 자동 확인 및 자동 구매 프로그램입니다. Discord를 통한 알림 기능을 지원합니다.
 
 ![lotto-bot-discord](https://github.com/user-attachments/assets/4ac7a958-51c8-4d58-9cfc-e5cb6ba56323)
 
-> **⚠️ 중요**: 이 저장소는 **Docker 전용**으로 개편되었습니다.
+> 이 저장소는 기존의 lotto-bot 저장소를 **Docker 전용**으로 개편한 버전입니다.
 
 ## 📚 목차
 - [Docker Hub에서 이미지 사용 (권장)](#docker-hub에서-이미지-사용-권장)
@@ -46,11 +45,13 @@ cat > .env << 'EOF'
 DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/YOUR_WEBHOOK_URL"
 EOF
 
-# 파일 권한 설정 (선택사항)
+# 파일 권한 설정
 chmod 600 credentials .env
 ```
 
 **credentials**와 **.env** 파일을 편집하여 실제 정보를 입력하세요.
+**⚠️ 중요**: 해당 파일들은 안전하게 관리해야 함을 유념하시기 바랍니다.
+
 
 ### 3. docker-compose.yml 파일 생성
 ```shell
@@ -82,8 +83,6 @@ docker compose up -d
 docker logs -f lotto-bot
 ```
 
-**자세한 사용법 및 트러블슈팅은 [OPERATION.md](OPERATION.md)를 참조하세요.**
-
 ---
 
 ## 로컬에서 빌드 및 실행
@@ -110,7 +109,7 @@ cp .env.example .env
 vim credentials
 vim .env
 
-# 파일 권한 설정 (선택사항)
+# 파일 권한 설정
 chmod 600 credentials .env
 ```
 
@@ -136,7 +135,7 @@ docker compose up -d
 docker logs -f lotto-bot
 ```
 
-**자세한 사용법 및 트러블슈팅은 [OPERATION.md](OPERATION.md)를 참조하세요.**
+**트러블슈팅 등 운영 팁은 [OPERATION.md](OPERATION.md)를 참조하세요.**
 
 ---
 
