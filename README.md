@@ -31,8 +31,8 @@ cd lotto-bot-docker
 mkdir -p ~/.secrets/lottobot
 
 # 템플릿 복사
-cp .secrets-template/credentials.template ~/.secrets/lottobot/credentials
-cp .secrets-template/.env.template ~/.secrets/lottobot/.env
+cp credentials.example ~/.secrets/lottobot/credentials
+cp .env.example ~/.secrets/lottobot/.env
 
 # 설정 파일 편집
 vim ~/.secrets/lottobot/credentials
