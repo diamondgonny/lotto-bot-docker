@@ -11,8 +11,8 @@
 **Note**: This project is Docker-only. Virtual environment (venv) setup is not supported.
 
 - `docker compose up -d --build` builds and launches the scheduled bot container.
-- `docker logs -f lottobot` monitors runtime output and cron execution.
-- `docker exec lottobot /usr/local/bin/python /app/lotto.py` runs a manual test inside the container.
+- `docker logs -f lotto-bot` monitors runtime output and cron execution.
+- `docker exec lotto-bot /usr/local/bin/python /app/lotto.py` runs a manual test inside the container.
 - `tail -f log/lotto_log_*.txt` monitors lotto logs from the host.
 - Set empty `DISCORD_BOT` in `lotto.py` for testing without notifications.
 

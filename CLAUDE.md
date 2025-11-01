@@ -75,16 +75,16 @@ Parsing uses regex pattern matching to extract slot (A-E), mode (자동/반자�
 docker compose up -d --build
 
 # View real-time container logs (cron output)
-docker logs -f lottobot
+docker logs -f lotto-bot
 
 # Manual test execution inside container
-docker exec lottobot /usr/local/bin/python /app/lotto.py
+docker exec lotto-bot /usr/local/bin/python /app/lotto.py
 
 # Access container shell for debugging
-docker exec -it lottobot bash
+docker exec -it lotto-bot bash
 
 # View cron execution logs inside container
-docker exec lottobot cat /var/log/cron.log
+docker exec lotto-bot cat /var/log/cron.log
 ```
 
 ### Local Development & Testing
@@ -97,10 +97,10 @@ tail -f log/lotto_error.log
 # Set DISCORD_BOT = False in lotto.py or unset DISCORD_WEBHOOK_URL in .env
 
 # Verify credentials file generation
-docker exec lottobot cat /root/.dhapi/credentials
+docker exec lotto-bot cat /root/.dhapi/credentials
 
 # Verify cron environment file
-docker exec lottobot cat /etc/lotto-cron
+docker exec lotto-bot cat /etc/lotto-cron
 ```
 
 ### Cron Schedule Modification

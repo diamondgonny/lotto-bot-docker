@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  DOCKER_IMAGE: diamondgonny/lottobot
+  DOCKER_IMAGE: diamondgonny/lotto-bot
 
 jobs:
   build-and-push:

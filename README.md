@@ -1,8 +1,8 @@
 # LottoBot
 
-[![Docker Hub](https://img.shields.io/docker/v/diamondgonny/lottobot?label=Docker%20Hub&logo=docker)](https://hub.docker.com/r/diamondgonny/lottobot)
-[![Docker Image Size](https://img.shields.io/docker/image-size/diamondgonny/lottobot/latest)](https://hub.docker.com/r/diamondgonny/lottobot)
-[![Docker Pulls](https://img.shields.io/docker/pulls/diamondgonny/lottobot)](https://hub.docker.com/r/diamondgonny/lottobot)
+[![Docker Hub](https://img.shields.io/docker/v/diamondgonny/lotto-bot?label=Docker%20Hub&logo=docker)](https://hub.docker.com/r/diamondgonny/lotto-bot)
+[![Docker Image Size](https://img.shields.io/docker/image-size/diamondgonny/lotto-bot/latest)](https://hub.docker.com/r/diamondgonny/lotto-bot)
+[![Docker Pulls](https://img.shields.io/docker/pulls/diamondgonny/lotto-bot)](https://hub.docker.com/r/diamondgonny/lotto-bot)
 
 [비공식 동행복권 API(dhapi)](https://github.com/roeniss/dhlottery-api)를 활용한 로또 당첨 자동 확인 및 자동 구매 프로그램입니다. Discord를 통한 알림 기능을 지원합니다.
 
@@ -56,9 +56,9 @@ chmod 600 credentials .env
 ```shell
 cat > docker-compose.yml << 'EOF'
 services:
-  lottobot:
-    image: diamondgonny/lottobot:latest
-    container_name: lottobot
+  lotto-bot:
+    image: diamondgonny/lotto-bot:latest
+    container_name: lotto-bot
     restart: unless-stopped
 
     environment:
@@ -79,7 +79,7 @@ EOF
 docker compose up -d
 
 # 실시간 로그 확인
-docker logs -f lottobot
+docker logs -f lotto-bot
 ```
 
 **자세한 사용법 및 트러블슈팅은 [OPERATION.md](OPERATION.md)를 참조하세요.**
@@ -133,7 +133,7 @@ DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/YOUR_WEBHOOK_URL"
 docker compose up -d
 
 # 실시간 로그
-docker logs -f lottobot
+docker logs -f lotto-bot
 ```
 
 **자세한 사용법 및 트러블슈팅은 [OPERATION.md](OPERATION.md)를 참조하세요.**
@@ -150,7 +150,7 @@ Docker 환경에서는 cron이 컨테이너 내부에서 자동으로 실행됩�
 ### 수동 실행 (테스트)
 ```shell
 # 컨테이너 내부에서 직접 실행
-docker exec lottobot /usr/local/bin/python /app/lotto.py
+docker exec lotto-bot /usr/local/bin/python /app/lotto.py
 ```
 
 ### 로그 파일 구조

@@ -36,13 +36,13 @@
 
 ```bash
 # 컨테이너 실행 상태
-docker ps | grep lottobot
+docker ps | grep lotto-bot
 
 # 컨테이너 로그
-docker logs lottobot
+docker logs lotto-bot
 
 # 실시간 로그
-docker logs -f lottobot
+docker logs -f lotto-bot
 ```
 
 ### 로또 구매/당첨 로그 확인
@@ -67,10 +67,10 @@ cat log/lotto_error.log
 mkdir -p backups
 
 # 로그 디렉토리 전체 백업
-tar -czf lottobot-logs-$(date +%Y%m%d).tar.gz log/
+tar -czf lotto-bot-logs-$(date +%Y%m%d).tar.gz log/
 
 # 백업 파일 이동
-mv lottobot-logs-*.tar.gz backups/
+mv lotto-bot-logs-*.tar.gz backups/
 ```
 
 ## 🐛 트러블슈팅
@@ -79,7 +79,7 @@ mv lottobot-logs-*.tar.gz backups/
 
 ```bash
 # 로그 확인
-docker logs lottobot
+docker logs lotto-bot
 
 # 설정 파일 존재 확인
 ls -la credentials .env
@@ -95,7 +95,7 @@ ls -la credentials
 3. dhapi 인증 정보 확인:
    ```bash
    # 컨테이너 내부 TOML 파일 확인 (entrypoint.sh가 생성)
-   docker exec lottobot cat /root/.dhapi/credentials
+   docker exec lotto-bot cat /root/.dhapi/credentials
    # [default] 섹션에 username과 password가 올바르게 생성되었는지 확인
    # credentials 파일의 환경변수가 올바르게 로드되었는지 확인합니다.
    ```
@@ -106,7 +106,7 @@ ls -la credentials
 2. Webhook URL 유효성 확인
 3. 컨테이너 내부에서 cron 환경 파일 확인:
    ```bash
-   docker exec lottobot [ -f /etc/lotto-cron ] && cat /etc/lotto-cron || echo "lotto-cron not found"
+   docker exec lotto-bot [ -f /etc/lotto-cron ] && cat /etc/lotto-cron || echo "lotto-cron not found"
    ```
 4. 컨테이너 재시작
 
@@ -114,7 +114,7 @@ ls -la credentials
 
 ```bash
 # 컨테이너 내부 진입
-docker exec -it lottobot bash
+docker exec -it lotto-bot bash
 
 # Cron 상태 확인
 ps aux | grep cron
