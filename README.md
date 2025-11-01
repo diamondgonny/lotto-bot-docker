@@ -1,5 +1,9 @@
 # LottoBot
 
+[![Docker Hub](https://img.shields.io/docker/v/diamondgonny/lottobot?label=Docker%20Hub&logo=docker)](https://hub.docker.com/r/diamondgonny/lottobot)
+[![Docker Image Size](https://img.shields.io/docker/image-size/diamondgonny/lottobot/latest)](https://hub.docker.com/r/diamondgonny/lottobot)
+[![Docker Pulls](https://img.shields.io/docker/pulls/diamondgonny/lottobot)](https://hub.docker.com/r/diamondgonny/lottobot)
+
 [비공식 동행복권 API(dhapi)](https://github.com/roeniss/dhlottery-api)를 활용한 로또 당첨 자동 확인 및 자동 구매 프로그램입니다. Discord를 통한 알림 기능을 지원합니다.
 
 ![lotto-bot-discord](https://github.com/user-attachments/assets/4ac7a958-51c8-4d58-9cfc-e5cb6ba56323)
@@ -7,13 +11,84 @@
 > **⚠️ 중요**: 이 저장소는 **Docker 전용**으로 개편되었습니다.
 
 ## 📚 목차
-- [Docker 설치 및 실행](#docker-설치-및-실행)
+- [Docker Hub에서 이미지 사용 (권장)](#docker-hub에서-이미지-사용-권장)
+- [로컬에서 빌드 및 실행](#로컬에서-빌드-및-실행)
 - [사용 방법](#사용-방법)
 - [주의사항](#주의사항)
 
 ---
 
-## Docker 설치 및 실행
+## Docker Hub에서 이미지 사용 (권장)
+
+Docker Hub에 미리 빌드된 이미지를 사용하면 빌드 과정 없이 바로 실행할 수 있습니다.
+
+### 사전 준비
+- Docker 및 Docker Compose 설치
+- 동행복권 홈페이지 회원가입
+
+### 1. 작업 디렉토리 생성
+```shell
+mkdir lotto-bot && cd lotto-bot
+```
+
+### 2. 설정 파일 생성
+```shell
+# credentials 파일 생성
+cat > credentials << 'EOF'
+# DH Lottery Credentials
+DHLOTTERY_USERNAME="your_dhlottery_id"
+DHLOTTERY_PASSWORD="your_dhlottery_password"
+EOF
+
+# .env 파일 생성
+cat > .env << 'EOF'
+# Discord Webhook
+DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/YOUR_WEBHOOK_URL"
+EOF
+
+# 파일 권한 설정 (선택사항)
+chmod 600 credentials .env
+```
+
+**credentials**와 **.env** 파일을 편집하여 실제 정보를 입력하세요.
+
+### 3. docker-compose.yml 파일 생성
+```shell
+cat > docker-compose.yml << 'EOF'
+services:
+  lottobot:
+    image: diamondgonny/lottobot:latest
+    container_name: lottobot
+    restart: unless-stopped
+
+    environment:
+      - TZ=Asia/Seoul
+
+    env_file:
+      - ./.env
+      - ./credentials
+
+    volumes:
+      - ./log:/app/log
+EOF
+```
+
+### 4. Docker 실행
+```shell
+# 컨테이너 시작
+docker compose up -d
+
+# 실시간 로그 확인
+docker logs -f lottobot
+```
+
+**자세한 사용법 및 트러블슈팅은 [OPERATION.md](OPERATION.md)를 참조하세요.**
+
+---
+
+## 로컬에서 빌드 및 실행
+
+소스 코드를 수정하거나 직접 빌드하려는 경우 이 방법을 사용하세요.
 
 ### 사전 준비
 - Docker 및 Docker Compose 설치
