@@ -43,6 +43,9 @@ EOF
 cat > .env << 'EOF'
 # Discord Webhook
 DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/YOUR_WEBHOOK_URL"
+
+# Cron Schedule (Sunday 09:20 KST)
+CRON_SCHEDULE="20 9 * * 0"
 EOF
 
 # 파일 권한 설정
@@ -125,6 +128,9 @@ DHLOTTERY_PASSWORD="your_dhlottery_password"
 ```env
 # Discord Webhook
 DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/YOUR_WEBHOOK_URL"
+
+# Cron Schedule (Sunday 09:20 KST)
+CRON_SCHEDULE="20 9 * * 0"
 ```
 
 ### 3. Docker 실행
@@ -145,7 +151,7 @@ docker logs -f lotto-bot
 ### 자동 실행 (Cron)
 Docker 환경에서는 cron이 컨테이너 내부에서 자동으로 실행됩니다.
 - **기본 스케줄**: 매주 일요일 오전 9시 20분 (KST)
-- **변경 방법**: `crontab` 파일 수정 후 `docker compose up -d --build`
+- **변경 방법**: `.env` 파일의 `CRON_SCHEDULE` 수정 후 `docker compose up -d --build`
 
 ### 수동 실행 (테스트)
 ```shell

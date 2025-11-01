@@ -25,26 +25,27 @@ The application follows a sequential two-phase execution pattern:
 
 **`entrypoint.sh`**: Container initialization script that:
 - Converts environment variables (`DHLOTTERY_USERNAME`, `DHLOTTERY_PASSWORD`) to TOML credentials file at `/root/.dhapi/credentials`
-- Exports `DISCORD_WEBHOOK_URL` to `/etc/lotto-cron` environment file for cron job access
+- Dynamically generates `/tmp/lotto.crontab` with environment variables and schedule from `CRON_SCHEDULE`
+- Installs crontab and cleans up temporary file
 - Starts cron daemon and tails cron logs
-
-**`crontab`**: Single cron job scheduled for Sunday 09:20 KST that sources `/etc/lotto-cron` and executes `lotto.py`
 
 ### Configuration Flow
 
 ```
 Project root: ./credentials → Docker env vars (DHLOTTERY_USERNAME, DHLOTTERY_PASSWORD)
                            ↓
-Project root: ./.env → Docker env var (DISCORD_WEBHOOK_URL)
+Project root: ./.env → Docker env vars (DISCORD_WEBHOOK_URL, CRON_SCHEDULE)
                            ↓
              entrypoint.sh (container startup)
                            ↓
    /root/.dhapi/credentials (TOML format for dhapi)
-   /etc/lotto-cron (env exports for cron)
+   /tmp/lotto.crontab (unified crontab: env vars + schedule)
                            ↓
-             cron job sources /etc/lotto-cron
+        crontab /tmp/lotto.crontab (install)
                            ↓
-                   lotto.py execution
+     /var/spool/cron/crontabs/root (installed crontab)
+                           ↓
+             cron job executes lotto.py
 ```
 
 ### Log File Structure
@@ -99,15 +100,17 @@ tail -f log/lotto_error.log
 # Verify credentials file generation
 docker exec lotto-bot cat /root/.dhapi/credentials
 
-# Verify cron environment file
-docker exec lotto-bot cat /etc/lotto-cron
+# Verify installed crontab
+docker exec lotto-bot crontab -l
 ```
 
 ### Cron Schedule Modification
-Edit `crontab` file and rebuild:
+Edit `CRON_SCHEDULE` in `.env` file and rebuild:
 ```bash
 # Default: 20 9 * * 0 (Sunday 09:20 KST)
-vim crontab
+# Format: minute hour day-of-month month day-of-week
+# Example: 0 21 * * 6 (Every Saturday 21:00 KST)
+vim .env
 docker compose up -d --build
 ```
 
@@ -141,13 +144,12 @@ docker compose up -d --build
 ## Key Files Reference
 
 - **`lotto.py`**: Main application logic (phases 1 & 2, round calculation, log parsing)
-- **`entrypoint.sh`**: Credentials conversion, environment setup, cron initialization
-- **`crontab`**: Weekly execution schedule definition
+- **`entrypoint.sh`**: Credentials conversion, dynamic crontab generation, cron initialization
 - **`Dockerfile`**: Python 3.11-slim base, cron installation, timezone setup
 - **`docker-compose.yml`**: Volume mounts for logs, secret file loading
 - **`requirements.txt`**: Python dependencies (dhapi only)
 - **`credentials.example`**: Template file for DH Lottery credentials
-- **`.env.example`**: Template file for environment variables (Discord webhook)
+- **`.env.example`**: Template file for environment variables (Discord webhook, cron schedule)
 
 ## Extending the Application
 
@@ -164,4 +166,4 @@ Update regex pattern in both `process_lotto_results()` and `report_lotto_numbers
 1. Add to template files (`credentials.example`, `.env.example`)
 2. Update `entrypoint.sh` to handle new variables
 3. Document in README.md setup section
-4. If needed by cron, export to `/etc/lotto-cron`
+4. If needed by cron job, add to `/tmp/lotto.crontab` generation in `entrypoint.sh`

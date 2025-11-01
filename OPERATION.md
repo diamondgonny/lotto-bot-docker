@@ -84,9 +84,9 @@ ls -la credentials
 
 1. `.env` 파일 확인: `cat .env`
 2. Webhook URL 유효성 확인
-3. 컨테이너 내부에서 cron 환경 파일 확인:
+3. 설치된 crontab에 환경 변수가 포함되었는지 확인:
    ```bash
-   docker exec lotto-bot [ -f /etc/lotto-cron ] && cat /etc/lotto-cron || echo "lotto-cron not found"
+   docker exec lotto-bot crontab -l
    ```
 4. 컨테이너 재시작
 
