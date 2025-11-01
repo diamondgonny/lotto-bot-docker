@@ -27,7 +27,7 @@ log/
 # Environment files
 .env
 .env.*
-credentials
+.credentials
 *.secret
 .secrets/
 

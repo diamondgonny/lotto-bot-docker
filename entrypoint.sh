@@ -21,7 +21,7 @@ EOF
     echo "✅ Credentials configured successfully"
 elif [ ! -f /root/.dhapi/credentials ]; then
     echo "⚠️  WARNING: No credentials configured!"
-    echo "Please set DHLOTTERY_USERNAME and DHLOTTERY_PASSWORD in credentials file"
+    echo "Please set DHLOTTERY_USERNAME and DHLOTTERY_PASSWORD in .credentials file"
     exit 1
 fi
 

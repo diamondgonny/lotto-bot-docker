@@ -1,5 +1,5 @@
 .env
-credentials
+.credentials
 log/
 venv/
 __pycache__/
