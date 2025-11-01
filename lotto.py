@@ -70,7 +70,7 @@ def get_winning_numbers(round_number):
         f"method=getLottoNumber&"
         f"drwNo={round_number}"
     )
-    response = requests.get(url)
+    response = requests.get(url, timeout=30)
     if response.status_code != 200:
         raise requests.RequestException(f"{round_number}회차 당첨 정보를 조회할 수 없습니다.")
     lotto_data = response.json()
