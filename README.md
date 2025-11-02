@@ -1,8 +1,5 @@
 # LottoBot
 
-[![Docker Hub](https://img.shields.io/docker/v/diamondgonny/lotto-bot?label=Docker%20Hub&logo=docker)](https://hub.docker.com/r/diamondgonny/lotto-bot)
-[![Docker Image Size](https://img.shields.io/docker/image-size/diamondgonny/lotto-bot/latest)](https://hub.docker.com/r/diamondgonny/lotto-bot)
-
 [비공식 동행복권 API(dhapi)](https://github.com/roeniss/dhlottery-api)를 활용한 로또 당첨 자동 확인 및 자동 구매 프로그램입니다. Discord를 통한 알림 기능을 지원합니다.
 
 ![lotto-bot-discord](https://github.com/user-attachments/assets/4ac7a958-51c8-4d58-9cfc-e5cb6ba56323)
@@ -10,16 +7,16 @@
 > 이 저장소는 기존의 lotto-bot 저장소를 **Docker 전용**으로 개편한 버전입니다.
 
 ## 📚 목차
-- [Docker Hub에서 이미지 사용 (권장)](#docker-hub에서-이미지-사용-권장)
+- [GHCR에서 이미지 사용 (권장)](#ghcr에서-이미지-사용-권장)
 - [로컬에서 빌드 및 실행](#로컬에서-빌드-및-실행)
 - [사용 방법](#사용-방법)
 - [주의사항](#주의사항)
 
 ---
 
-## Docker Hub에서 이미지 사용 (권장)
+## GHCR에서 이미지 사용 (권장)
 
-Docker Hub에 미리 빌드된 이미지를 사용하면 빌드 과정 없이 바로 실행할 수 있습니다.
+GitHub Container Registry(GHCR)에 미리 빌드된 이미지를 사용하면 빌드 과정 없이 바로 실행할 수 있습니다.
 
 ### 사전 준비
 - Docker 및 Docker Compose 설치
@@ -62,7 +59,7 @@ chmod 600 .credentials .env
 cat > docker-compose.yml << 'EOF'
 services:
   lotto-bot:
-    image: diamondgonny/lotto-bot:latest
+    image: ghcr.io/diamondgonny/lotto-bot:latest
     container_name: lotto-bot
     restart: unless-stopped
 
