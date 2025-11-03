@@ -57,6 +57,7 @@ jobs:
             ${{ env.DOCKER_IMAGE }}:${{ steps.version.outputs.major }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          provenance: false
 
   release:
     needs: build-and-push
