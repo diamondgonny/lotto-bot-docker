@@ -78,11 +78,14 @@ docker compose up -d --build
 # View real-time container logs (cron output)
 docker logs -f lotto-bot
 
-# Manual test execution inside container
-docker exec lotto-bot /usr/local/bin/python /app/lotto.py
+# Manual test execution inside container (as lottobot user)
+docker exec lotto-bot /usr/sbin/runuser -u lottobot -- /usr/local/bin/python /app/lotto.py
 
 # Access container shell for debugging
 docker exec -it lotto-bot bash
+
+# Verify process runs as lottobot user
+docker exec lotto-bot ps aux | grep python
 
 # View cron execution logs inside container
 docker exec lotto-bot cat /var/log/cron.log
@@ -129,11 +132,20 @@ docker compose up -d --build
 - dhapi errors are parsed from stderr and logged with original error type
 
 ### Security Model
-- No inbound ports exposed (container operates in isolation)
-- Credentials never embedded in Docker image or logs
-- Credentials stored in project root (`.credentials`, `.env`) excluded via `.gitignore`
-- Environment variables converted to TOML format at runtime by entrypoint.sh
-- JSESSIONID-based authentication via dhapi (no permanent token storage)
+- **Privilege Separation**: Application runs as non-root user `lottobot` (UID/GID 1000)
+  - Cron daemon runs as root (Debian cron requirement)
+  - Python script and tail executed via `/usr/sbin/runuser -u lottobot`
+  - Log directory `/app/log` owned by lottobot for write access
+- **Input Validation**:
+  - `CRON_SCHEDULE` restricted to safe characters: `[0-9*/,\ -]` (blocks `$()`, `;`, `&`, `|`)
+  - Webhook URL escaped with `printf '%q'` before crontab insertion
+  - Credentials TOML generated via Python `json.dumps()` (auto-escapes `"`, `$`, `\n`)
+- **Network Isolation**: No inbound ports exposed (container operates in isolation)
+- **Credential Protection**:
+  - Credentials never embedded in Docker image or logs
+  - Stored in project root (`.credentials`, `.env`) excluded via `.gitignore`
+  - Environment variables converted to TOML format at runtime by entrypoint.sh
+  - JSESSIONID-based authentication via dhapi (no permanent token storage)
 
 ### Timezone & Scheduling
 - Container timezone: Asia/Seoul (KST)

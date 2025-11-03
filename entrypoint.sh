@@ -12,12 +12,28 @@ echo ""
 if [ -n "$DHLOTTERY_USERNAME" ] && [ -n "$DHLOTTERY_PASSWORD" ]; then
     echo "🔑 Configuring dhapi credentials..."
     mkdir -p /root/.dhapi
-    cat > /root/.dhapi/credentials <<EOF
-[default]
-username = "$DHLOTTERY_USERNAME"
-password = "$DHLOTTERY_PASSWORD"
-EOF
-    chmod 600 /root/.dhapi/credentials
+    python3 <<'PYEOF'
+import os, sys, tomli_w
+
+try:
+    username = os.environ['DHLOTTERY_USERNAME']
+    password = os.environ['DHLOTTERY_PASSWORD']
+except KeyError as e:
+    print(f"❌ ERROR: Missing environment variable: {e}")
+    sys.exit(1)
+
+credentials = {
+    "default": {
+        "username": username,
+        "password": password
+    }
+}
+
+with open('/root/.dhapi/credentials', 'wb') as f:
+    tomli_w.dump(credentials, f)
+
+os.chmod('/root/.dhapi/credentials', 0o600)
+PYEOF
     echo "✅ Credentials configured successfully"
 elif [ ! -f /root/.dhapi/credentials ]; then
     echo "⚠️  WARNING: No credentials configured!"
@@ -29,7 +45,17 @@ echo ""
 
 # Setup cron schedule from environment variable
 CRON_SCHEDULE="${CRON_SCHEDULE:-20 9 * * 0}"
+# Trim whitespace, newlines, tabs
+CRON_SCHEDULE=$(echo "$CRON_SCHEDULE" | tr -d '\n\t' | xargs)
 echo "📅 Configuring cron schedule: ${CRON_SCHEDULE}"
+
+# Validate character set (only allow cron-safe characters)
+if [[ ! "$CRON_SCHEDULE" =~ ^[0-9*/,\ -]+$ ]]; then
+    echo "❌ ERROR: Invalid characters in CRON_SCHEDULE: ${CRON_SCHEDULE}"
+    echo "   Allowed: digits, *, /, comma, space, hyphen"
+    echo "   Blocked: shell metacharacters like \$, (, ), ;, &, |"
+    exit 1
+fi
 
 # Validate CRON_SCHEDULE format (5 fields)
 if [[ ! "$CRON_SCHEDULE" =~ ^([^[:space:]]+[[:space:]]+){4}[^[:space:]]+$ ]]; then
@@ -70,13 +96,20 @@ if [ -n "$DISCORD_WEBHOOK_URL" ]; then
     fi
 fi
 
+# Escape webhook URL for safe crontab insertion
+if [ -n "$DISCORD_WEBHOOK_URL" ]; then
+    ESCAPED_DISCORD_WEBHOOK_URL=$(printf '%q' "$DISCORD_WEBHOOK_URL")
+else
+    ESCAPED_DISCORD_WEBHOOK_URL=""
+fi
+
 # Create unified crontab with environment variables and schedule
 cat > /tmp/lotto.crontab <<EOF
 # Environment variables for cron job
-DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
+DISCORD_WEBHOOK_URL=${ESCAPED_DISCORD_WEBHOOK_URL}
 
 # LottoBot schedule: Check results and purchase new tickets
-${CRON_SCHEDULE} cd /app && /usr/local/bin/python /app/lotto.py >> /var/log/cron.log 2>&1
+${CRON_SCHEDULE} /usr/sbin/runuser -u lottobot -- /usr/local/bin/python /app/lotto.py >> /var/log/cron.log 2>&1
 EOF
 
 # Install crontab
@@ -88,7 +121,7 @@ if crontab -l > /dev/null 2>&1; then
     echo ""
     echo "Installed schedule:"
     echo "---"
-    crontab -l | grep -v "^#" | grep -v "^$"
+    crontab -l | grep -v "^#" | grep -v "^$" | sed 's|DISCORD_WEBHOOK_URL=.*|DISCORD_WEBHOOK_URL=***MASKED***|'
     echo "---"
     echo ""
     rm -f /tmp/lotto.crontab
@@ -111,4 +144,4 @@ echo "========================================="
 echo ""
 
 # Tail cron log to keep container running and show output
-tail -f /var/log/cron.log
+/usr/sbin/runuser -u lottobot -- tail -f /var/log/cron.log

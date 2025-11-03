@@ -11,6 +11,10 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Create non-root user for running application
+RUN groupadd -g 1000 lottobot && \
+    useradd -u 1000 -g lottobot -m -s /bin/bash lottobot
+
 # Set working directory
 WORKDIR /app
 
@@ -25,10 +29,14 @@ COPY entrypoint.sh /entrypoint.sh
 
 # Set proper permissions
 RUN chmod +x /entrypoint.sh && \
-    touch /var/log/cron.log
+    touch /var/log/cron.log && \
+    chmod 644 /var/log/cron.log
 
 # Create log directory
 RUN mkdir -p /app/log
+
+# Set ownership for application directories
+RUN chown -R lottobot:lottobot /app
 
 # Entrypoint script to start cron daemon
 ENTRYPOINT ["/entrypoint.sh"]
