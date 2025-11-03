@@ -75,7 +75,7 @@ ls -la .credentials
 3. dhapi 인증 정보 확인:
    ```bash
    # 컨테이너 내부 TOML 파일 확인 (entrypoint.sh가 생성)
-   docker exec lotto-bot cat /root/.dhapi/credentials
+   docker exec lotto-bot cat /home/lottobot/.dhapi/credentials
    # [default] 섹션에 username과 password가 올바르게 생성되었는지 확인
    # .credentials 파일의 환경변수가 올바르게 로드되었는지 확인합니다.
    ```

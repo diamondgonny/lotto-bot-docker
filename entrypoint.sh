@@ -8,12 +8,19 @@ echo "Timezone: ${TZ}"
 echo "Current time: $(date '+%Y-%m-%d %H:%M:%S %Z')"
 echo ""
 
+# Set up permissions for bind-mounted log directory
+echo "🔧 Setting up log directory permissions..."
+chown -R lottobot:lottobot /app/log
+chmod 700 /app/log
+echo "✅ Log directory permissions configured"
+echo ""
+
 # Generate credentials file from environment variables
 if [ -n "$DHLOTTERY_USERNAME" ] && [ -n "$DHLOTTERY_PASSWORD" ]; then
     echo "🔑 Configuring dhapi credentials..."
-    mkdir -p /root/.dhapi
+    mkdir -p /home/lottobot/.dhapi
     python3 <<'PYEOF'
-import os, sys, tomli_w
+import os, sys, tomli_w, subprocess
 
 try:
     username = os.environ['DHLOTTERY_USERNAME']
@@ -29,13 +36,17 @@ credentials = {
     }
 }
 
-with open('/root/.dhapi/credentials', 'wb') as f:
+credentials_path = '/home/lottobot/.dhapi/credentials'
+with open(credentials_path, 'wb') as f:
     tomli_w.dump(credentials, f)
 
-os.chmod('/root/.dhapi/credentials', 0o600)
+os.chmod(credentials_path, 0o600)
+
+# Set ownership to lottobot user
+subprocess.run(['chown', '-R', 'lottobot:lottobot', '/home/lottobot/.dhapi'], check=True)
 PYEOF
     echo "✅ Credentials configured successfully"
-elif [ ! -f /root/.dhapi/credentials ]; then
+elif [ ! -f /home/lottobot/.dhapi/credentials ]; then
     echo "⚠️  WARNING: No credentials configured!"
     echo "Please set DHLOTTERY_USERNAME and DHLOTTERY_PASSWORD in .credentials file"
     exit 1

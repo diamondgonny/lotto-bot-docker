@@ -24,7 +24,8 @@ The application follows a sequential two-phase execution pattern:
 - `get_lotto_round_and_target_date()`: Calculates round numbers based on first lottery date (2002-12-07)
 
 **`entrypoint.sh`**: Container initialization script that:
-- Converts environment variables (`DHLOTTERY_USERNAME`, `DHLOTTERY_PASSWORD`) to TOML credentials file at `/root/.dhapi/credentials`
+- Sets up log directory permissions for lottobot user
+- Converts environment variables (`DHLOTTERY_USERNAME`, `DHLOTTERY_PASSWORD`) to TOML credentials file at `/home/lottobot/.dhapi/credentials`
 - Dynamically generates `/tmp/lotto.crontab` with environment variables and schedule from `CRON_SCHEDULE`
 - Installs crontab and cleans up temporary file
 - Starts cron daemon and tails cron logs
@@ -38,14 +39,14 @@ Project root: ./.env → Docker env vars (DISCORD_WEBHOOK_URL, CRON_SCHEDULE)
                            ↓
              entrypoint.sh (container startup)
                            ↓
-   /root/.dhapi/credentials (TOML format for dhapi)
+   /home/lottobot/.dhapi/credentials (TOML format, lottobot user)
    /tmp/lotto.crontab (unified crontab: env vars + schedule)
                            ↓
         crontab /tmp/lotto.crontab (install)
                            ↓
      /var/spool/cron/crontabs/root (installed crontab)
                            ↓
-             cron job executes lotto.py
+        cron job executes lotto.py (as lottobot user via runuser)
 ```
 
 ### Log File Structure
@@ -100,8 +101,8 @@ tail -f log/lotto_error.log
 # Test without Discord notifications
 # Set DISCORD_BOT = False in lotto.py or unset DISCORD_WEBHOOK_URL in .env
 
-# Verify credentials file generation
-docker exec lotto-bot cat /root/.dhapi/credentials
+# Verify credentials file generation (as lottobot user)
+docker exec lotto-bot cat /home/lottobot/.dhapi/credentials
 
 # Verify installed crontab
 docker exec lotto-bot crontab -l
@@ -135,7 +136,7 @@ docker compose up -d --build
 - **Privilege Separation**: Application runs as non-root user `lottobot` (UID/GID 1000)
   - Cron daemon runs as root (Debian cron requirement)
   - Python script and tail executed via `/usr/sbin/runuser -u lottobot`
-  - Log directory `/app/log` owned by lottobot for write access
+  - Log directory `/app/log` owned by lottobot with `700` permissions (lottobot-only access)
 - **Input Validation**:
   - `CRON_SCHEDULE` restricted to safe characters: `[0-9*/,\ -]` (blocks `$()`, `;`, `&`, `|`)
   - Webhook URL escaped with `printf '%q'` before crontab insertion
