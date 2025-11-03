@@ -1,8 +1,5 @@
 # LottoBot
 
-[![Docker Hub](https://img.shields.io/docker/v/diamondgonny/lotto-bot?label=Docker%20Hub&logo=docker)](https://hub.docker.com/r/diamondgonny/lotto-bot)
-[![Docker Image Size](https://img.shields.io/docker/image-size/diamondgonny/lotto-bot/latest)](https://hub.docker.com/r/diamondgonny/lotto-bot)
-
 [비공식 동행복권 API(dhapi)](https://github.com/roeniss/dhlottery-api)를 활용한 로또 당첨 자동 확인 및 자동 구매 프로그램입니다. Discord를 통한 알림 기능을 지원합니다.
 
 ![lotto-bot-discord](https://github.com/user-attachments/assets/4ac7a958-51c8-4d58-9cfc-e5cb6ba56323)
