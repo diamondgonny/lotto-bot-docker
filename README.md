@@ -16,6 +16,10 @@
 
 ## GHCR에서 이미지 사용 (권장)
 
+### 지원 플랫폼
+- **linux/amd64**: Intel/AMD 64-bit 프로세서
+- **linux/arm64**: Apple Silicon, AWS Graviton 등
+
 GitHub Container Registry(GHCR)에 미리 빌드된 이미지를 사용하면 빌드 과정 없이 바로 실행할 수 있습니다.
 
 ### 사전 준비
