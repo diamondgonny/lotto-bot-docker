@@ -15,3 +15,7 @@ services:
 
     volumes:
       - ./log:/app/log
+
+networks:
+  default:
+    name: lotto-bot
