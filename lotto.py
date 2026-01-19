@@ -57,18 +57,28 @@ def get_latest_log_file(directory="log"):
 
 def get_winning_numbers(round_number):
     """회차별 당첨번호를 가져옴"""
-    url = (
-        f"https://www.dhlottery.co.kr/common.do?"
-        f"method=getLottoNumber&"
-        f"drwNo={round_number}"
-    )
+    url = f"https://www.dhlottery.co.kr/lt645/selectPstLt645Info.do?srchLtEpsd={round_number}"
     response = requests.get(url, timeout=30)
     if response.status_code != 200:
         raise requests.RequestException(f"{round_number}회차 당첨 정보를 조회할 수 없습니다.")
-    lotto_data = response.json()
-    if lotto_data.get("returnValue") != "success":
+    raw_data = response.json()
+    data_list = raw_data.get("data", {}).get("list", [])
+    if not data_list:
         raise RuntimeError(f"{round_number}회차 당첨 정보가 아직 없습니다.")
-    return lotto_data
+    item = data_list[0]
+    # 기존 API 포맷과 호환되도록 변환
+    draw_date_raw = item["ltRflYmd"]  # "YYYYMMDD"
+    draw_date = f"{draw_date_raw[:4]}-{draw_date_raw[4:6]}-{draw_date_raw[6:8]}"
+    return {
+        "drwtNo1": item["tm1WnNo"],
+        "drwtNo2": item["tm2WnNo"],
+        "drwtNo3": item["tm3WnNo"],
+        "drwtNo4": item["tm4WnNo"],
+        "drwtNo5": item["tm5WnNo"],
+        "drwtNo6": item["tm6WnNo"],
+        "bnusNo": item["bnsWnNo"],
+        "drwNoDate": draw_date,
+    }
 
 def check_prize(numbers, winning_numbers, bonus_number):
     """당첨 여부 판별 및 결과를 확인"""
