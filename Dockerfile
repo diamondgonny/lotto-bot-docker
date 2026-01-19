@@ -5,9 +5,9 @@ FROM python:3.11-slim
 ENV TZ=Asia/Seoul
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Install cron and clean up
+# Install cron, git and clean up
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends cron && \
+    apt-get install -y --no-install-recommends cron git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
